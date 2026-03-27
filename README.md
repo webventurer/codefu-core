@@ -2,6 +2,8 @@
 
 Claude Code skills for **atomic commits** and **Linear workflow**.
 
+Ready to get started? See the **[install guide](INSTALL.md)** for setup instructions, requirements, and API keys.
+
 ## Why atomic commits matter
 
 <mark>**When AI agents write code, the quality of git history becomes a make-or-break concern.**</mark>
@@ -26,20 +28,6 @@ Together, these skills turn Claude Code from a capable code generator into a **d
 
 <mark>**The approach is designed to compound: as AI models improve, the structured documentation gets more from them, not less.**</mark>
 
-## Install
-
-```bash
-pnpm dlx @codefu/core
-```
-
-Or with npx:
-
-```bash
-npx @codefu/core
-```
-
-This copies skills, commands, and hooks into your project's `.claude/` directory and merges hook config into your existing `settings.json`.
-
 ## What you get
 
 ### /commit — atomic git commits
@@ -63,23 +51,6 @@ Five commands that cover the full development cycle. See the [full workflow refe
 | `/linear:finish` | Merge approved PR and close the issue |
 | `/linear:next-steps` | Review priorities and recommend next work |
 
-## Requirements
-
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI
-- [Linear MCP server](https://www.npmjs.com/package/@anthropic-ai/linear-mcp-server) (for /linear commands)
-- [GitHub CLI](https://cli.github.com/) (`gh`) for PR operations
-
-## What gets installed
-
-```
-.claude/
-├── skills/commit/           ← skill + workflow + reference docs
-├── commands/linear/         ← 5 commands + reference docs
-├── hooks/                   ← commit wrapper + bare-commit blocker
-└── docs/                    ← supporting patterns and concepts
-```
-
-The install script merges hook config into your existing `.claude/settings.json` — it won't overwrite your other settings.
 
 ## License
 
