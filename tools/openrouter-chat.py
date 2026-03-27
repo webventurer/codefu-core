@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
+# /// script
+# dependencies = ["click", "python-dotenv", "httpx"]
+# ///
 """Chat completion via OpenRouter. Zero-dependency on codefu.
 
 Usage:
-    python tools/openrouter-chat.py "prompt"
-    python tools/openrouter-chat.py "prompt" -m openai/gpt-5.4-pro
-    python tools/openrouter-chat.py "prompt" -s "You are a reviewer."
+    uv run tools/openrouter-chat.py "prompt"
+    uv run tools/openrouter-chat.py "prompt" -m openai/gpt-5.4-pro
+    uv run tools/openrouter-chat.py "prompt" -s "You are a reviewer."
 """
 
 import os
