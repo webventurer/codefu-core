@@ -123,6 +123,7 @@ async function main() {
   console.log("  .claude/commands/linear/   (Linear workflow commands)");
   console.log("  .claude/hooks/             (commit hook scripts)");
   console.log("  .claude/docs/              (supporting documentation)");
+  console.log("  tools/                     (cross-model feedback script)");
 
   // Merge settings
   const settingsPath = join(destRoot, ".claude/settings.json");
