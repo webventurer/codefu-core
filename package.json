@@ -1,0 +1,24 @@
+{
+  "name": "@codefu/core",
+  "version": "0.1.0",
+  "description": "Claude Code skills for atomic commits and Linear workflow",
+  "bin": {
+    "codefu-core": "./bin/install.mjs"
+  },
+  "files": [
+    "bin",
+    ".claude"
+  ],
+  "keywords": [
+    "claude-code",
+    "git",
+    "commits",
+    "linear",
+    "workflow"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mikemindel/codefu-core"
+  }
+}
