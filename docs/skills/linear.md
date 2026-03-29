@@ -40,7 +40,7 @@ In `--research` mode, explores the codebase and Linear first, then adds code exa
 
 - `/linear:plan-work "add dark mode toggle"` — quick mode
 - `/linear:plan-work --research "add PostHog integration"` — research mode
-- `/linear:plan-work --craft "add dark mode toggle"` — auto-run CRAFT prompt refinement
+- `/linear:plan-work --craft "add dark mode toggle"` — auto-run [CRAFT prompt refinement](/skills/craft)
 - `/linear:plan-work --research --craft "description"` — research + CRAFT combined
 
 ### /linear:start

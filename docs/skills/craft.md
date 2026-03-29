@@ -2,6 +2,8 @@
 
 A prompt that creates a prompt. Give it a topic; it produces a fully structured prompt using the C.R.A.F.T. framework that you then paste into a fresh LLM conversation to get exceptional output.
 
+`/craft` is also a built-in step in [`/linear:plan-work --craft`](/skills/linear#linearplan-work) — it sharpens your issue description into a clearer prompt before the agent drafts the issue. Without it, research mode works from whatever you typed; with it, the agent works from a refined, structured description.
+
 ## The CRAFT framework
 
 Each letter represents a section of the generated prompt:
