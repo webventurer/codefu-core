@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'codefu',
   description: 'Claude Code skills for atomic commits and Linear workflow',
+  base: '/codefu-core/',
   themeConfig: {
     nav: [
       { text: 'Guide', link: '/getting-started' },
