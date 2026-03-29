@@ -41,7 +41,11 @@ Executable instructions the agent follows step by step. Each skill has:
 - **SKILL.md** — the principles, decision rules, and reference material
 - **WORKFLOW.md** — the exact execution sequence
 
-Skills are invoked directly (`/commit`). Commands are namespaced (`/linear:start`, `/linear:finish`).
+**Skills** live in `.claude/skills/` and are invoked directly (`/commit`, `/craft`). A skill has its own `SKILL.md` (principles and rules) and `WORKFLOW.md` (execution steps) — it's a self-contained methodology the agent internalises.
+
+**Commands** live in `.claude/commands/` and are namespaced (`/linear:start`, `/linear:finish`). Each command is a single markdown file describing one discrete action. Commands are grouped by integration — all five Linear commands share context but execute independently.
+
+The distinction: a skill teaches the agent *how to think* about a problem (atomic commits, prompt crafting). A command tells the agent *what to do* in a specific situation (start an issue, merge a PR).
 
 ### 3. Safety (`.claude/hooks/`)
 
