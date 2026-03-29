@@ -79,3 +79,33 @@ Get your key at [openrouter.ai/keys](https://openrouter.ai/keys).
 ```
 
 The install script merges hook config into your existing `.claude/settings.json` — it won't overwrite your other settings.
+
+## Known limitations
+
+### No versioning
+
+There's no version number, changelog, or upgrade path. When you install, you get the current state of the repo. If you install again later, files are overwritten with whatever's current — no diff, no migration notes.
+
+**What this means:** you won't know what changed between installs. If the repo goes private or gets renamed, your project still works (the files are local), but updates stop with no warning.
+
+**Workaround:** pin to a specific commit if stability matters:
+
+```bash
+npx github:webventurer/codefu-core#<commit-sha>
+```
+
+### Hook scripts require bash
+
+The commit safety hook (`block_bare_git_commit.sh`) is a shell script. If it fails — wrong shell, missing permissions, Windows without WSL — the enforcement disappears silently. The agent will happily use bare `git commit` without the four-pass methodology.
+
+**Check it's working:** if you can run `.claude/hooks/do_commit.sh --help` without errors, you're fine. If not, check that the scripts are executable (`chmod +x .claude/hooks/*.sh`).
+
+### Settings merge strategy
+
+When you already have a `.claude/settings.json`, the install script asks before merging. If you say yes, it uses a deep merge:
+
+- **Objects** are merged recursively — your keys are preserved, codefu's keys are added alongside
+- **Arrays** (like hook lists) are appended with deduplication — if a hook already exists, it's skipped
+- **Scalar values** — codefu's value wins if both sides set the same key
+
+The merge is additive — it never removes your existing settings. But if you have a hook on the same event with different behaviour, both will run. Review `.claude/settings.json` after install if you have existing hooks.

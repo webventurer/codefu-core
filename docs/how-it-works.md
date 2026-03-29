@@ -55,6 +55,8 @@ Hooks that enforce discipline at the tool level:
 - Run security checks on file edits
 - Validate formatting standards
 
+**Important:** the hooks are shell scripts. If they fail silently (permissions, wrong shell, Windows without WSL), the safety net disappears — the agent will use bare `git commit` without the four-pass methodology. See the [install guide's known limitations](/install#hook-scripts-require-bash) for how to verify they're working.
+
 ## The `/commit` four-pass methodology
 
 When you run `/commit`, the agent doesn't just stage and commit. It runs four distinct passes, each with a different cognitive focus:
