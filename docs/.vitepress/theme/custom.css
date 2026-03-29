@@ -1,0 +1,46 @@
+:root {
+  --vp-c-text-1: #1a1a1a;
+  --vp-c-text-2: #4a4a4a;
+  --vp-c-text-3: #6a6a6a;
+  --vp-code-color: #1a1a1a;
+
+}
+
+.VPHero .VPImage {
+  max-width: 480px !important;
+  max-height: 480px !important;
+}
+
+/* Fix mobile: reduce negative margins so image doesn't overlap title */
+@media (max-width: 639px) {
+  .VPHero .image {
+    margin: -24px -24px 0 !important;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 959px) {
+  .VPHero .image {
+    margin: -48px -24px 0 !important;
+  }
+}
+
+@media (min-width: 960px) {
+  .VPHero .main {
+    width: 50% !important;
+    max-width: 50% !important;
+  }
+
+  .VPHero .image-container {
+    transform: none !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+  }
+
+  .VPHero :deep(.image-src) {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+  }
+}

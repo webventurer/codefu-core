@@ -4,15 +4,18 @@ Five commands covering the full development cycle, from planning through to merg
 
 ## Typical workflow
 
+```bash
+/linear:next-steps          # see what needs doing
+/linear:plan-work           # create a new issue (if needed)
+/linear:start PG-X          # branch, implement, PR, terminal review
+  # ... you review the diff in the terminal ...
+  # ... someone reviews on GitHub ...
+/linear:fix PG-X            # address GitHub review feedback (if any)
+/linear:finish PG-X         # squash merge, clean up, Done
 ```
-/linear:next-steps          → see what needs doing
-/linear:plan-work           → create a new issue (if needed)
-/linear:start PG-X          → branch, implement, PR, terminal review
-  ... you review the diff in the terminal ...
-  ... someone reviews on GitHub ...
-/linear:fix PG-X            → address GitHub review feedback (if any)
-/linear:finish PG-X         → squash merge, clean up, Done
-```
+
+![Linear board view](/linear-board.jpg)
+*Issues flow from Backlog through Doing to Done, driven entirely by `/linear` commands. See the [Kanban process](/reference/kanban) for how the columns work.*
 
 ## Commands
 
@@ -23,6 +26,9 @@ Five commands covering the full development cycle, from planning through to merg
 Priority ordering: build failure > PRs needing fix > in-progress work > PRs needing review > approved PRs to merge > backlog.
 
 For each open PR, checks GitHub for `CHANGES_REQUESTED` reviews and unresolved comments. PRs needing fix are surfaced above new backlog work.
+
+![Linear issue detail](/linear-card.jpg)
+*A well-structured issue created by `/linear:plan-work` — clear Problem, Goal, and Scope sections that give the agent everything it needs to start work.*
 
 ### /linear:plan-work
 

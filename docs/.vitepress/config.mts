@@ -27,6 +27,13 @@ export default defineConfig({
           { text: '/linear — Linear workflow', link: '/skills/linear' },
         ],
       },
+      {
+        text: 'Reference',
+        items: [
+          { text: 'Kanban process', link: '/reference/kanban' },
+          { text: 'Chris Beams commit style', link: '/reference/commit-style' },
+        ],
+      },
     ],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/webventurer/codefu-core' },

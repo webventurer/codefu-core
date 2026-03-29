@@ -70,12 +70,12 @@ Get your key at [openrouter.ai/keys](https://openrouter.ai/keys).
 
 ## What gets installed
 
-```
+```bash
 .claude/
-├── skills/commit/           ← skill + workflow + reference docs
-├── commands/linear/         ← 5 commands + reference docs
-├── hooks/                   ← commit wrapper + bare-commit blocker
-└── docs/                    ← supporting patterns and concepts
+├── skills/commit/           # skill + workflow + reference docs
+├── commands/linear/         # 5 commands + reference docs
+├── hooks/                   # commit wrapper + bare-commit blocker
+└── docs/                    # supporting patterns and concepts
 ```
 
 The install script merges hook config into your existing `.claude/settings.json` — it won't overwrite your other settings.
