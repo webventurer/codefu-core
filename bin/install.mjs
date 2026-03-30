@@ -4,8 +4,10 @@ import {
   chmodSync,
   cpSync,
   existsSync,
+  lstatSync,
   mkdirSync,
   readFileSync,
+  rmSync,
   writeFileSync,
 } from "node:fs";
 import { dirname, join } from "node:path";
@@ -84,6 +86,15 @@ function copyFiles() {
     const src = join(srcRoot, dir);
     const dest = join(destRoot, dir);
     if (existsSync(src)) {
+      // Remove destination if type mismatches (file vs directory) to avoid
+      // ERR_FS_CP_DIR_TO_NON_DIR when upgrading from an older layout.
+      if (existsSync(dest)) {
+        const srcIsDir = lstatSync(src).isDirectory();
+        const destIsDir = lstatSync(dest).isDirectory();
+        if (srcIsDir !== destIsDir) {
+          rmSync(dest, { recursive: true, force: true });
+        }
+      }
       mkdirSync(dest, { recursive: true });
       cpSync(src, dest, { recursive: true });
     }
