@@ -148,6 +148,20 @@ git add -p filename.js
 
 This is a dedicated pass because of [content focus blindness](SKILL.md#content-focus-blindness) — both people and AI miss formatting rules while focused on content logic.
 
+### Intent before diff
+
+<mark>**Before looking at the diff, ask: "What is the user trying to accomplish?"**</mark>
+
+The diff tells you *what changed*. The user's intent tells you *why*. The commit message should reflect the purpose, not the mechanics.
+
+| Trap | Example | Fix |
+|:-----|:--------|:----|
+| Describing the diff | "Fix image paths" | The purpose was "Add PDF export" — the path fix was just a means |
+| Describing the last step | "Rename directory to hyphens" | The purpose was "Embed images in PDF" — the rename enabled it |
+| Describing the tool | "Run md2pdf script" | The purpose was "Generate shareable PDF of event notes" |
+
+**The test:** if someone reads only the commit log six months from now, will they understand what was accomplished — or just what files moved?
+
 ### Subject line checklist (50 chars max)
 
 - [ ] **No "and" in the subject** — if present, split into separate commits ([the "and" test](SKILL.md#the-and-test)) — **AI frequently misses this**

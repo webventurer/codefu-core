@@ -131,6 +131,12 @@ git add docs/research/ai-coding/what-is-a-frame.md
 
 ---
 
+## Intent before diff
+
+<mark>**"What is the user trying to accomplish?"** — ask this before looking at the diff.</mark>
+
+The diff tells you *what changed*. The user's intent tells you *why*. AI consistently writes commit messages that describe the mechanics of the diff ("fix image paths", "rename directory") rather than the purpose ("add PDF export with embedded images"). The commit log should read like a story of what was accomplished, not a changelog of file operations.
+
 ## Content focus blindness
 
 Both people and AI consistently miss formatting standards while focused on content logic. The four-pass approach solves this by making standards verification a dedicated step (Pass 2) separate from content decisions (Pass 1).
@@ -210,6 +216,26 @@ Pre-commit hooks can accidentally cause you to commit multiple unrelated files t
 ## Execution
 
 <mark>**Read and follow every step in [WORKFLOW.md](WORKFLOW.md).**</mark>
+
+---
+
+## What atomic commits afford
+
+> Not what a commit *is* — what it makes possible.
+
+Atomic commits aren't just a discipline. They're a position that creates possibilities that don't exist when changes are lumped together:
+
+| Affordance | What becomes possible |
+|:-----------|:----------------------|
+| **Automatic changelog** | Typed prefixes + clear subjects let tooling generate changelogs mechanically — no human curation required |
+| **Narrative arc** | The commit log reads like a story of the journey — what was built, why, in what order. Future developers inherit *context*, not just code |
+| **Independent revertibility** | Any commit can be undone without collateral damage — you remove one idea, not a tangle of ideas |
+| **Bisectability** | `git bisect` works because every commit is a working state — the bug hides in exactly one commit, not somewhere across a session dump |
+| **Review in logical steps** | Reviewers follow the author's reasoning one thought at a time, instead of reverse-engineering intent from a wall of diffs |
+| **Cherry-picking** | Individual changes move cleanly between branches — a fix doesn't drag an unrelated feature along for the ride |
+| **Blame that explains** | `git blame` points to a commit that says *why*, not a grab-bag that says "various changes" |
+
+<mark>Before atomic commits, these possibilities don't exist. After, they're available whether you use them or not — that's what makes them affordances, not features.</mark>
 
 ---
 
