@@ -73,7 +73,7 @@ this worth doing now (1–2 sentences)
 Current state — the bug, gap, or opportunity (1–2 sentences)
 
 ### What we'll do
-- Bullet list of what's included (the deliverable and scope)
+One-sentence deliverable, then bullet list of scope details
 
 ### What we won't do
 (Only if genuinely useful — omit if nothing meaningful)
@@ -143,6 +143,8 @@ Linear's markdown.
 
 ### What we'll do
 *Concrete deliverables — what ships when this closes.*
+
+Confirm the new issue template renders correctly in Linear.
 - Create a single placeholder issue using the new template
   format
 - Visual check that all sections render as expected
