@@ -71,18 +71,23 @@ function dedupeHooks(existing, incoming) {
   return existing;
 }
 
-function copyFiles() {
-  const dirs = [
-    ".claude/skills/commit",
-    ".claude/skills/craft",
-    ".claude/commands/linear",
-    ".claude/hooks",
-    ".claude/docs/patterns/git",
-    ".claude/docs/concepts",
-    "tools",
-  ];
+const DIRS = [
+  ".claude/skills/commit",
+  ".claude/skills/craft",
+  ".claude/commands/linear",
+  ".claude/hooks",
+  ".claude/docs/patterns/git",
+  ".claude/docs/concepts",
+  "tools",
+];
 
-  for (const dir of dirs) {
+const HOOKS = [
+  ".claude/hooks/do_commit.sh",
+  ".claude/hooks/pretooluse/block_bare_git_commit.sh",
+];
+
+function copyFiles() {
+  for (const dir of DIRS) {
     const src = join(srcRoot, dir);
     const dest = join(destRoot, dir);
     if (existsSync(src)) {
@@ -100,20 +105,16 @@ function copyFiles() {
     }
   }
 
-  // Ensure hook scripts are executable
-  const hooks = [
-    ".claude/hooks/do_commit.sh",
-    ".claude/hooks/pretooluse/block_bare_git_commit.sh",
-  ];
-  for (const hook of hooks) {
+  for (const hook of HOOKS) {
     const path = join(destRoot, hook);
     if (existsSync(path)) chmodSync(path, 0o755);
   }
 }
 
+const EXAMPLE_FILES = [".mcp.json.example"];
+
 function copyExampleFiles() {
-  const files = [".mcp.json.example"];
-  for (const file of files) {
+  for (const file of EXAMPLE_FILES) {
     const src = join(srcRoot, file);
     if (existsSync(src)) cpSync(src, join(destRoot, file));
   }
