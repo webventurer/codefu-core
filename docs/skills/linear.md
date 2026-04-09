@@ -1,12 +1,16 @@
 # /linear — Linear workflow
 
-Six commands covering the full development cycle, from setup through to merge — all without leaving Claude Code.
+Seven commands covering the full development cycle, from setup through to merge — all without leaving Claude Code.
 
 ## Typical workflow
 
 ```bash
+# Utility
 /linear:check               # verify MCP connections
+/linear:list-projects       # list all projects across workspaces
 /linear:next-steps          # see what needs doing
+
+# Workflow
 /linear:plan-work           # create a new issue (if needed)
 /linear:start PG-X          # branch, implement, PR, terminal review
   # ... you review the diff in the terminal ...
@@ -23,6 +27,12 @@ Six commands covering the full development cycle, from setup through to merge �
 ### /linear:check
 
 **Verify Linear MCP connections.** Reads `.mcp.json`, finds all Linear server entries, and calls `list_teams` on each to confirm it responds. Reports results as a table showing server name, status, and workspace.
+
+### /linear:list-projects
+
+**List all projects across connected Linear workspaces.** Calls `list_projects` on each configured Linear MCP server and displays results grouped by workspace.
+
+**Usage**: `/linear:list-projects`
 
 ### /linear:next-steps
 

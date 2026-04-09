@@ -8,12 +8,18 @@ This guide covers how to connect Claude Code to Linear via the MCP server.
 
 **Prerequisites**: A Linear workspace and Claude Code with the Linear MCP server configured.
 
-**Commands at a glance** (ordered by workflow):
+**Utility commands:**
 
 | Command | What it does |
 |:--------|:-------------|
 | `/linear:check` | Verify MCP connections — confirm each Linear server responds |
+| `/linear:list-projects` | List all projects across connected Linear workspaces |
 | `/linear:next-steps` | Review priorities, surface PRs needing fix, recommend what to work on next |
+
+**Workflow commands:**
+
+| Command | What it does |
+|:--------|:-------------|
 | `/linear:plan-work` | Draft and create a Linear issue with optional `--research` and `--craft` flags |
 | `/linear:start` | Branch, implement, validate, open PR, and review the diff in the terminal |
 | `/linear:fix` | Address GitHub PR review feedback, validate, push, and comment on the PR |

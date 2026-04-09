@@ -4,8 +4,17 @@
 
 ## Typical workflow
 
+**Utility:**
+
 ```
+/linear:check               → verify MCP connections
+/linear:list-projects       → list all projects across workspaces
 /linear:next-steps          → see what needs doing
+```
+
+**Workflow:**
+
+```
 /linear:plan-work           → create a new issue (if needed)
 /linear:start PG-X          → branch, implement, PR, terminal review
   ... you review the diff in the terminal ...
