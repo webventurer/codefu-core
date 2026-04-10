@@ -251,7 +251,7 @@ def create_project_update(api_key: str, project_id: str, update: dict) -> bool:
 CREATE_LINK_QUERY = """mutation($input: EntityExternalLinkCreateInput!) {
     entityExternalLinkCreate(input: $input) {
         success
-        externalLink { id }
+        entityExternalLink { id }
     }
 }"""
 
