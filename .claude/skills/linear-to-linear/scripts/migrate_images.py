@@ -76,7 +76,9 @@ ISSUE_QUERY = '{{ issue(id: "{issue_id}") {{ description }} }}'
 
 
 def fetch_signed_urls(api_key: str, issue_id: str) -> dict:
-    desc = graphql(api_key, ISSUE_QUERY.format(issue_id=issue_id))["data"]["issue"]["description"]
+    desc = graphql(api_key, ISSUE_QUERY.format(issue_id=issue_id))["data"][
+        "issue"
+    ]["description"]
     return {url_path(url): url for _, url in find_image_refs(desc)}
 
 
@@ -136,7 +138,9 @@ FILE_UPLOAD_QUERY = """mutation {{
 def request_upload_url(
     api_key: str, filename: str, size: int, content_type: str
 ) -> dict:
-    query = FILE_UPLOAD_QUERY.format(content_type=content_type, filename=filename, size=size)
+    query = FILE_UPLOAD_QUERY.format(
+        content_type=content_type, filename=filename, size=size
+    )
     return graphql(api_key, query)["data"]["fileUpload"]["uploadFile"]
 
 
@@ -181,7 +185,10 @@ UPDATE_ISSUE_QUERY = """mutation {{
 
 def update_issue(api_key: str, issue_id: str, description: str, title: str):
     desc_json = json.dumps(description)
-    result = graphql(api_key, UPDATE_ISSUE_QUERY.format(issue_id=issue_id, desc_json=desc_json))
+    result = graphql(
+        api_key,
+        UPDATE_ISSUE_QUERY.format(issue_id=issue_id, desc_json=desc_json),
+    )
     success = (
         result.get("data", {}).get("issueUpdate", {}).get("success", False)
     )
@@ -197,7 +204,9 @@ TARGET_ISSUES_QUERY = """{{ issues(filter: {{
 
 
 def fetch_target_issues(api_key: str, team: str, project: str) -> list:
-    return graphql(api_key, TARGET_ISSUES_QUERY.format(team=team, project=project))["data"]["issues"]["nodes"]
+    return graphql(
+        api_key, TARGET_ISSUES_QUERY.format(team=team, project=project)
+    )["data"]["issues"]["nodes"]
 
 
 if __name__ == "__main__":

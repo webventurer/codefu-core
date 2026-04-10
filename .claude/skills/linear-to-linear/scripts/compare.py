@@ -55,7 +55,10 @@ def fetch_issues(api_key: str, team: str, project: str) -> list:
     issues, cursor = [], None
     while True:
         after = f', after: "{cursor}"' if cursor else ""
-        data = graphql(api_key, ISSUES_QUERY.format(team=team, project=project, after=after))["data"]["issues"]
+        data = graphql(
+            api_key,
+            ISSUES_QUERY.format(team=team, project=project, after=after),
+        )["data"]["issues"]
         issues.extend(data["nodes"])
         if not data["pageInfo"]["hasNextPage"]:
             break
@@ -137,7 +140,12 @@ def fix_problems(target_key: str, problems: list):
     fixed = 0
     for p in problems:
         desc_json = json.dumps(p["expected"])
-        result = graphql(target_key, UPDATE_ISSUE_QUERY.format(issue_id=p["target_id"], desc_json=desc_json))
+        result = graphql(
+            target_key,
+            UPDATE_ISSUE_QUERY.format(
+                issue_id=p["target_id"], desc_json=desc_json
+            ),
+        )
         success = (
             result.get("data", {}).get("issueUpdate", {}).get("success", False)
         )

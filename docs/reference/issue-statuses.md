@@ -38,4 +38,3 @@ Renaming a status updates the corresponding board column label for that team. Se
 **Waiting sits under Started, not Unstarted** — a waiting item is in-flight work that's blocked on something external. It's not new work sitting in a queue — someone has already started it. Keeping it under Started means it counts against Work In Progress ("WIP") limits and stays visible as an active concern that needs unblocking.
 
 **Canceled vs Duplicate are separate statuses** — both are terminal, but for different reasons. Canceled means "we decided not to do this." Duplicate means "this is covered by another issue." The distinction matters when reviewing closed work — it tells you whether a decision was made or whether work was consolidated.
-

@@ -40,7 +40,9 @@ STATES_QUERY = """{{ workflowStates(filter: {{ team: {{ id: {{ eq: "{team_id}" }
 
 def fetch_target_states(api_key: str, team: str) -> list:
     team_id = resolve_by_name(api_key, "teams", team)
-    return graphql(api_key, STATES_QUERY.format(team_id=team_id))["data"]["workflowStates"]["nodes"]
+    return graphql(api_key, STATES_QUERY.format(team_id=team_id))["data"][
+        "workflowStates"
+    ]["nodes"]
 
 
 def report(source: list, target: list, missing: set):

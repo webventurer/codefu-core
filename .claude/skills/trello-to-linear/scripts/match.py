@@ -56,8 +56,7 @@ def build_match_report(
 ) -> list[dict]:
     linear_by_title = {normalise(i["title"]): i for i in linear_issues}
     return [
-        find_match(card, linear_by_title, threshold)
-        for card in trello_cards
+        find_match(card, linear_by_title, threshold) for card in trello_cards
     ]
 
 
