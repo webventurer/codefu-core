@@ -40,21 +40,25 @@ def main(
         click.echo("No issues with images found.")
         return
 
-    click.echo(
-        f"Found {len(cards)} issues ({sum(len(c['images']) for c in cards)} images)"
-    )
-
+    report_image_count(cards)
     target_issues = fetch_target_issues(target_key, target_team, target_project)
 
     for card in cards:
-        signed = fetch_signed_urls(source_key, card["id"])
-        url_map = migrate_all_images(
-            target_key, card["images"], signed, dry_run
-        )
-        if url_map and not dry_run:
-            append_images_to_issue(
-                target_key, target_issues, card["title"], url_map
-            )
+        migrate_card_images(source_key, target_key, target_issues, card, dry_run)
+
+
+def report_image_count(cards: list):
+    total = sum(len(c["images"]) for c in cards)
+    click.echo(f"Found {len(cards)} issues ({total} images)")
+
+
+def migrate_card_images(
+    source_key: str, target_key: str, target_issues: list, card: dict, dry_run: bool
+):
+    signed = fetch_signed_urls(source_key, card["id"])
+    url_map = migrate_all_images(target_key, card["images"], signed, dry_run)
+    if url_map and not dry_run:
+        append_images_to_issue(target_key, target_issues, card["title"], url_map)
 
 
 def load_cards_with_images(export_dir: Path) -> list:
@@ -91,17 +95,23 @@ def migrate_all_images(
 ) -> dict:
     url_map = {}
     for alt, old_url in images:
-        signed_url = signed.get(url_path(old_url))
-        if not signed_url:
-            click.echo(f"  ✗ No signed URL for {alt}")
-            continue
-        if dry_run:
-            click.echo(f"  [DRY RUN] {alt}")
-            continue
-        result = download_and_upload(target_key, alt, signed_url)
-        if result:
-            url_map[old_url] = result
+        migrate_one_image(target_key, alt, old_url, signed, dry_run, url_map)
     return url_map
+
+
+def migrate_one_image(
+    target_key: str, alt: str, old_url: str, signed: dict, dry_run: bool, url_map: dict
+):
+    signed_url = signed.get(url_path(old_url))
+    if not signed_url:
+        click.echo(f"  ✗ No signed URL for {alt}")
+        return
+    if dry_run:
+        click.echo(f"  [DRY RUN] {alt}")
+        return
+    result = download_and_upload(target_key, alt, signed_url)
+    if result:
+        url_map[old_url] = result
 
 
 def download_and_upload(
