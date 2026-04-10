@@ -83,7 +83,7 @@ The six commands map to how work actually moves through a board:
 /linear:finish     →  merge, clean up, Done
 ```
 
-Each command knows about Linear statuses, GitHub PRs, and git branches. The agent moves issues through Backlog → To do → Doing → In review → Done automatically as work progresses.
+Each command knows about Linear statuses, GitHub PRs, and git branches. The agent moves issues through Backlog → Todo → Doing → In review → Done automatically as work progresses.
 
 ## The cross-model feedback loop
 

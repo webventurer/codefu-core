@@ -146,7 +146,7 @@ Then run /linear:start <issue-id> — it will pick up the branch and skip straig
 
 ### 5. Update Linear status → Doing
 
-Only update if the current status is To do, Backlog, or Backburner.
+Only update if the current status is Todo, Backlog, or Backburner.
 
 Set status to **Doing** via `save_issue`.
 

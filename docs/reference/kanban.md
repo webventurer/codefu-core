@@ -10,10 +10,10 @@ See [Issue statuses](/reference/issue-statuses) for how to configure these colum
 
 | Category | Column | Purpose | Entry rule | Exit rule |
 |:---------|:-------|:--------|:-----------|:----------|
-| Backlog | **Backburner** | Parked work — valid but not now | Team agrees to defer | Re-prioritised back to Backlog or To do |
+| Backlog | **Backburner** | Parked work — valid but not now | Team agrees to defer | Re-prioritised back to Backlog or Todo |
 | Backlog | **Backlog** | New work not yet prioritised | Anyone can add work here | Prioritised and refined enough to start |
-| Unstarted | **To do** | Committed work, ready to pick up | Prioritised by the team | Someone pulls it into Doing |
-| Started | **Doing** | Actively being worked on | Developer pulls from To do | Implementation complete, ready for review |
+| Unstarted | **Todo** | Committed work, ready to pick up | Prioritised by the team | Someone pulls it into Doing |
+| Started | **Doing** | Actively being worked on | Developer pulls from Todo | Implementation complete, ready for review |
 | Started | **In Review** | Code complete, under review | PR opened or review requested | Reviewer approves or requests changes |
 | Started | **Waiting** | Blocked on something external | Work cannot progress without input | Blocker resolved, moves back to Doing or forward |
 | Completed | **Done** | Merged and deployed | Review approved, PR merged | — |
@@ -24,12 +24,12 @@ See [Issue statuses](/reference/issue-statuses) for how to configure these colum
 
 | | | | | | | | | |
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| **Backburner** | **Backlog** | **To do** | **Doing** | **In Review** | **Waiting** | **Done** | **Canceled** | **Duplicate** |
+| **Backburner** | **Backlog** | **Todo** | **Doing** | **In Review** | **Waiting** | **Done** | **Canceled** | **Duplicate** |
 | Valid, but not now | New work, not yet prioritised | Prioritised, ready to pick up | Actively being worked on | Code complete, under review | Blocked externally | Merged and deployed | Decided not to do | Covered elsewhere |
 
 ### The rules
 
-1. **Pull, don't push** — developers pull the next item from To do when they have capacity. Nobody assigns work to a full queue.
+1. **Pull, don't push** — developers pull the next item from Todo when they have capacity. Nobody assigns work to a full queue.
 2. **Limit work in progress** — cap how many items can be in Doing and In Review at once. This prevents context switching and makes bottlenecks visible.
 3. **Make blockers explicit** — when work stalls, move it to Waiting with a note explaining *what* it's waiting on. Don't leave it in Doing looking like active work.
 4. **Backburner is not a graveyard** — items here are intentionally deferred, not forgotten. Review the backburner periodically and either promote items back or remove them.
@@ -62,7 +62,7 @@ There's no universal number. A common starting point is **number of team members
 - **No WIP limits** — without limits, everything is "in progress" and nothing finishes. The board becomes a to-do list with extra steps.
 - **Skipping Waiting** — leaving blocked items in Doing hides the true state of work and inflates the active count.
 - **Backlog as a dumping ground** — an ungroomed backlog grows endlessly. Regularly prune items that will never be done.
-- **Moving cards backwards** — if review finds issues, the card goes back to Doing (not to To do). Backwards movement through earlier stages signals a process problem.
+- **Moving cards backwards** — if review finds issues, the card goes back to Doing (not to Todo). Backwards movement through earlier stages signals a process problem.
 
 ## Articles
 

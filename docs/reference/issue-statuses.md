@@ -33,7 +33,7 @@ Renaming a status updates the corresponding board column label for that team. Se
 
 ### Why this organisation
 
-**Backburner sits under Backlog, not Canceled** — backburner is not a graveyard. These are valid items that have been intentionally deferred, not rejected. Keeping them in the Backlog category means they stay visible during periodic reviews and can be promoted back to To do when the time is right. If they were under Canceled, they'd disappear from the active board and never get revisited.
+**Backburner sits under Backlog, not Canceled** — backburner is not a graveyard. These are valid items that have been intentionally deferred, not rejected. Keeping them in the Backlog category means they stay visible during periodic reviews and can be promoted back to Todo when the time is right. If they were under Canceled, they'd disappear from the active board and never get revisited.
 
 **Waiting sits under Started, not Unstarted** — a waiting item is in-flight work that's blocked on something external. It's not new work sitting in a queue — someone has already started it. Keeping it under Started means it counts against Work In Progress ("WIP") limits and stays visible as an active concern that needs unblocking.
 
