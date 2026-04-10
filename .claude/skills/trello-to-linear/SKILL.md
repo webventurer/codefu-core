@@ -3,6 +3,8 @@ name: trello-to-linear
 description: Migrate Trello cards to Linear issues — descriptions, comments, and checklists. Use when migrating from Trello to Linear or recovering lost content. Triggers on "trello to linear", "migrate trello", "sync descriptions".
 ---
 
+**CRITICAL**: Read and follow EVERY step in `WORKFLOW.md`
+
 # Trello to Linear
 
 > Deterministic migration of Trello card content (descriptions, comments, checklists) into Linear issues, matched by title.

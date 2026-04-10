@@ -3,6 +3,8 @@ name: linear-to-linear
 description: Copy issues between Linear workspaces — descriptions, comments, labels, attachments, images, and state. Use when Linear lacks a workspace copy tool. Triggers on "linear to linear", "copy workspace", "migrate linear".
 ---
 
+**CRITICAL**: Read and follow EVERY step in `WORKFLOW.md`
+
 # Linear to linear
 
 > Copy issues from one Linear workspace to another, preserving descriptions, comments, labels, attachments (PRs, commits), images, and state.
@@ -43,6 +45,8 @@ All scripts live in `scripts/` and share `linear_api.py` for GraphQL calls, retr
 | `verify.py` | Verify | Compares source export against target issues — checks counts, titles, descriptions |
 
 ### Running
+
+All commands assume you are in `.claude/skills/linear-to-linear/`.
 
 ```bash
 # Phase 1: Export source issues

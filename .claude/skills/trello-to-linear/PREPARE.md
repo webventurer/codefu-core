@@ -8,15 +8,47 @@ Both are throwaway documents — start fresh each session.
 
 ## Inputs needed
 
-Before starting, collect:
+<mark>**Ask each question below one at a time using `AskUserQuestion`. Do not proceed until all answers are collected.**</mark>
 
-| Input | How to get it |
-|:------|:-------------|
-| Trello board | Name or ID. If a name is given, resolve the ID via `mcp__trello__list_boards` |
-| Trello workspace | Organisation name in Trello (e.g. "Wordtracker"). Use `mcp__trello__set_active_workspace` if needed |
-| Linear project name | The project where issues were migrated (e.g. "What's next (archive)") |
-| Linear team name | The team in the Linear workspace (e.g. "Wordtracker") |
-| Output directory | Where to write export files (default: `/tmp/trello-export`) |
+### Step 1: Ask for Trello workspace
+
+Ask: *"Which Trello workspace are you migrating from?"*
+
+List available workspaces via `mcp__trello__list_boards` and extract unique organisation names. Set the active workspace with `mcp__trello__set_active_workspace`.
+
+### Step 2: Ask for Trello board
+
+Ask: *"Which Trello board do you want to migrate?"*
+
+List boards in the selected workspace via `mcp__trello__list_boards` and present board names as options. Record the board ID.
+
+### Step 3: Ask for Linear workspace
+
+Ask: *"Which Linear workspace are you migrating TO?"*
+
+Offer the available Linear MCP servers as options (e.g. `linear-personal`, `linear-wordtracker`).
+
+### Step 4: Ask for Linear project
+
+Use the target MCP server to call `list_projects` and present the project names as options.
+
+Ask: *"Which Linear project should receive the migrated cards? (Select 'Other' to create a new one)"*
+
+Record the project name and its team.
+
+### Step 5: Confirm
+
+Display a summary table and ask for confirmation before proceeding:
+
+| | Source | Value |
+|:--|:-------|:------|
+| **Trello workspace** | *answer 1* | |
+| **Trello board** | *answer 2* | |
+| **Linear workspace** | *answer 3* | |
+| **Linear team** | *from step 4* | |
+| **Linear project** | *answer 4* | |
+
+Ask: *"Does this look correct?"*
 
 ---
 

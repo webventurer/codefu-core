@@ -6,16 +6,58 @@
 
 ## Before you start
 
-Collect these inputs and **confirm source/target with the user** before proceeding — getting them backwards overwrites the wrong workspace.
+<mark>**Ask each question below one at a time using `AskUserQuestion`. Do not proceed until all four answers are collected. Getting source/target backwards overwrites the wrong workspace.**</mark>
 
-| Input | Example |
-|:------|:--------|
-| Source MCP server | `mcp__linear-personal__*` |
-| Source team / project | Playground / "Wordtracker: Intelligence" |
-| Source API key env var | `LINEAR_PLAYGROUND_API_KEY` |
-| Target MCP server | `mcp__linear-wordtracker__*` |
-| Target team / project | Wordtracker / "Intelligence" |
-| Target API key env var | `LINEAR_WORDTRACKER_API_KEY` |
+### Step 1: Ask for source workspace
+
+Ask: *"Which Linear workspace are you migrating FROM (source)?"*
+
+Offer the available Linear MCP servers as options (e.g. `linear-personal`, `linear-wordtracker`). Derive the API key env var from the workspace name (e.g. `linear-personal` → `LINEAR_PLAYGROUND_API_KEY`). Confirm the env var with the user.
+
+### Step 2: Ask for source project
+
+Use the source MCP server to call `list_projects` and present the project names as options.
+
+Ask: *"Which project are you migrating FROM?"*
+
+Record the project name and its team.
+
+### Step 3: Ask for target workspace
+
+Ask: *"Which Linear workspace are you migrating TO (target)?"*
+
+Offer the remaining Linear MCP servers as options. Derive the API key env var and confirm with the user.
+
+### Step 4: Ask for target project
+
+Use the target MCP server to call `list_projects` and present the project names as options.
+
+Ask: *"Which project are you migrating TO? (Select 'Other' to create a new one)"*
+
+Record the project name and its team.
+
+### Step 5: Confirm
+
+Display a summary table and ask for confirmation before proceeding:
+
+| | Workspace | Team | Project | API key env var |
+|:--|:----------|:-----|:--------|:----------------|
+| **Source** | *answer 1* | *from step 2* | *answer 2* | *derived* |
+| **Target** | *answer 3* | *from step 4* | *answer 4* | *derived* |
+
+Ask: *"Does this look correct? Getting source/target backwards will overwrite the wrong workspace."*
+
+---
+
+## Working directory
+
+<mark>**All commands assume you are in the skill directory.** Run this first:
+
+```bash
+cd .claude/skills/linear-to-linear
+```
+
+Script paths (`scripts/...`) are relative to this directory. Running from the repo root will fail.</mark>
 
 ---
 
