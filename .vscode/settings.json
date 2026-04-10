@@ -1,7 +1,3 @@
 {
-  "python.analysis.extraPaths": [],
-  "python.analysis.diagnosticSeverityOverrides": {
-    "reportMissingImports": "none"
-  },
   "python.defaultInterpreterPath": ".venv/bin/python"
 }
