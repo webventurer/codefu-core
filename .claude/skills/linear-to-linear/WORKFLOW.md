@@ -96,7 +96,8 @@ cat /tmp/linear-export/SUMMARY.md
 
 1. Call `mcp__linear-<target>__list_projects` with the project name
 2. If not found, create it or stop
-3. **Check states** — compare source states against the target:
+3. **Copy project description** — call `mcp__linear-<source>__get_project` to fetch the full description and summary, then update the target project with `mcp__linear-<target>__save_project` passing the `id`, `description`, and `summary`
+4. **Check states** — compare source states against the target:
 
 ```bash
 python scripts/check_states.py \
@@ -105,7 +106,7 @@ python scripts/check_states.py \
   --export-dir /tmp/linear-export
 ```
 
-4. If any source states are missing, ask the user to rename them in the target workspace (Linear UI > Team Settings > Workflow). Re-run until all pass
+5. If any source states are missing, ask the user to rename them in the target workspace (Linear UI > Team Settings > Workflow). Re-run until all pass
 
 ---
 
