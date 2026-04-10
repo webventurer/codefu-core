@@ -7,17 +7,6 @@ from pathlib import Path
 import click
 from linear_api import graphql, require_env, resolve_by_name, resolve_states
 
-CREATE_ISSUE_QUERY = """mutation($input: IssueCreateInput!) {
-    issueCreate(input: $input) {
-        success
-        issue { id identifier title }
-    }
-}"""
-
-CREATE_ATTACHMENT_QUERY = """mutation($input: AttachmentCreateInput!) {
-    attachmentCreate(input: $input) { success }
-}"""
-
 
 @click.command()
 @click.option("--cards-dir", required=True, type=click.Path(exists=True))
@@ -48,9 +37,11 @@ def resolve_state_ids(api_key: str, team_id: str) -> dict:
     return {name: s["id"] for name, s in states.items()}
 
 
+LABELS_QUERY = """{ issueLabels { nodes { id name } } }"""
+
+
 def resolve_label_ids(api_key: str) -> dict:
-    query = """{ issueLabels { nodes { id name } } }"""
-    data = graphql(api_key, query)
+    data = graphql(api_key, LABELS_QUERY)
     return {l["name"]: l["id"] for l in data["data"]["issueLabels"]["nodes"]}
 
 
@@ -139,6 +130,14 @@ def build_issue_input(
     return result
 
 
+CREATE_ISSUE_QUERY = """mutation($input: IssueCreateInput!) {
+    issueCreate(input: $input) {
+        success
+        issue { id identifier title }
+    }
+}"""
+
+
 def submit_issue(api_key: str, issue_input: dict, title: str) -> str | None:
     try:
         data = graphql(
@@ -156,6 +155,11 @@ def submit_issue(api_key: str, issue_input: dict, title: str) -> str | None:
     except Exception as e:
         click.echo(f"  ✗ ERROR: {title[:60]} — {e}")
         return None
+
+
+CREATE_ATTACHMENT_QUERY = """mutation($input: AttachmentCreateInput!) {
+    attachmentCreate(input: $input) { success }
+}"""
 
 
 def create_attachments(api_key: str, issue_id: str, attachments: list):

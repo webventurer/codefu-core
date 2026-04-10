@@ -41,9 +41,11 @@ def load_source_labels(export_dir: Path) -> list:
     return [{"name": name, "color": ""} for name in seen]
 
 
+LABELS_QUERY = """{ issueLabels { nodes { name color } } }"""
+
+
 def fetch_target_labels(api_key: str) -> list:
-    query = """{ issueLabels { nodes { name color } } }"""
-    return graphql(api_key, query)["data"]["issueLabels"]["nodes"]
+    return graphql(api_key, LABELS_QUERY)["data"]["issueLabels"]["nodes"]
 
 
 def report(source_labels: list, missing: set):
@@ -64,14 +66,16 @@ def create_missing(api_key: str, source_labels: list, missing: set):
         create_label(api_key, name, color)
 
 
+CREATE_LABEL_QUERY = """mutation($input: IssueLabelCreateInput!) {
+    issueLabelCreate(input: $input) { success issueLabel { id name } }
+}"""
+
+
 def create_label(api_key: str, name: str, color: str):
-    mutation = """mutation($input: IssueLabelCreateInput!) {
-        issueLabelCreate(input: $input) { success issueLabel { id name } }
-    }"""
     label_input = {"name": name}
     if color:
         label_input["color"] = color
-    result = graphql(api_key, mutation, variables={"input": label_input})
+    result = graphql(api_key, CREATE_LABEL_QUERY, variables={"input": label_input})
     success = result.get("data", {}).get("issueLabelCreate", {}).get("success", False)
     click.echo(f"  {'✓' if success else '✗'} {name}")
 

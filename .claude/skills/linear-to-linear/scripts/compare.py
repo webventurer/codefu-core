@@ -42,18 +42,20 @@ def main(
         fix_problems(target_key, problems)
 
 
+ISSUES_QUERY = """{{ issues(filter: {{
+    team: {{ name: {{ eq: "{team}" }} }}
+    project: {{ name: {{ eq: "{project}" }} }}
+}}, first: 250 {after}) {{
+    nodes {{ id title description }}
+    pageInfo {{ hasNextPage endCursor }}
+}} }}"""
+
+
 def fetch_issues(api_key: str, team: str, project: str) -> list:
     issues, cursor = [], None
     while True:
         after = f', after: "{cursor}"' if cursor else ""
-        query = f"""{{ issues(filter: {{
-            team: {{ name: {{ eq: "{team}" }} }}
-            project: {{ name: {{ eq: "{project}" }} }}
-        }}, first: 250 {after}) {{
-            nodes {{ id title description }}
-            pageInfo {{ hasNextPage endCursor }}
-        }} }}"""
-        data = graphql(api_key, query)["data"]["issues"]
+        data = graphql(api_key, ISSUES_QUERY.format(team=team, project=project, after=after))["data"]["issues"]
         issues.extend(data["nodes"])
         if not data["pageInfo"]["hasNextPage"]:
             break
@@ -124,13 +126,15 @@ def report_problems(problems: list):
             click.echo(f"    - {issue}")
 
 
+UPDATE_ISSUE_QUERY = 'mutation {{ issueUpdate(id: "{issue_id}", input: {{ description: {desc_json} }}) {{ success }} }}'
+
+
 def fix_problems(target_key: str, problems: list):
     click.echo(f"\nFixing {len(problems)} issues...")
     fixed = 0
     for p in problems:
         desc_json = json.dumps(p["expected"])
-        query = f'mutation {{ issueUpdate(id: "{p["target_id"]}", input: {{ description: {desc_json} }}) {{ success }} }}'
-        result = graphql(target_key, query)
+        result = graphql(target_key, UPDATE_ISSUE_QUERY.format(issue_id=p["target_id"], desc_json=desc_json))
         success = (
             result.get("data", {}).get("issueUpdate", {}).get("success", False)
         )

@@ -33,12 +33,14 @@ def load_source_states(export_dir: Path) -> list:
     return json.loads(path.read_text())
 
 
+STATES_QUERY = """{{ workflowStates(filter: {{ team: {{ id: {{ eq: "{team_id}" }} }} }}) {{
+    nodes {{ name type }}
+}} }}"""
+
+
 def fetch_target_states(api_key: str, team: str) -> list:
     team_id = resolve_by_name(api_key, "teams", team)
-    query = f"""{{ workflowStates(filter: {{ team: {{ id: {{ eq: "{team_id}" }} }} }}) {{
-        nodes {{ name type }}
-    }} }}"""
-    return graphql(api_key, query)["data"]["workflowStates"]["nodes"]
+    return graphql(api_key, STATES_QUERY.format(team_id=team_id))["data"]["workflowStates"]["nodes"]
 
 
 def report(source: list, target: list, missing: set):

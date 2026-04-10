@@ -72,9 +72,11 @@ def find_image_refs(text: str) -> list:
     )
 
 
+ISSUE_QUERY = '{{ issue(id: "{issue_id}") {{ description }} }}'
+
+
 def fetch_signed_urls(api_key: str, issue_id: str) -> dict:
-    query = f'{{ issue(id: "{issue_id}") {{ description }} }}'
-    desc = graphql(api_key, query)["data"]["issue"]["description"]
+    desc = graphql(api_key, ISSUE_QUERY.format(issue_id=issue_id))["data"]["issue"]["description"]
     return {url_path(url): url for _, url in find_image_refs(desc)}
 
 
@@ -123,16 +125,19 @@ def upload_to_target(
     return put_image(upload_info, data, content_type)
 
 
+FILE_UPLOAD_QUERY = """mutation {{
+    fileUpload(contentType: "{content_type}", filename: "{filename}", size: {size}) {{
+        success
+        uploadFile {{ uploadUrl assetUrl headers {{ key value }} }}
+    }}
+}}"""
+
+
 def request_upload_url(
     api_key: str, filename: str, size: int, content_type: str
 ) -> dict:
-    mutation = f"""mutation {{
-        fileUpload(contentType: "{content_type}", filename: "{filename}", size: {size}) {{
-            success
-            uploadFile {{ uploadUrl assetUrl headers {{ key value }} }}
-        }}
-    }}"""
-    return graphql(api_key, mutation)["data"]["fileUpload"]["uploadFile"]
+    query = FILE_UPLOAD_QUERY.format(content_type=content_type, filename=filename, size=size)
+    return graphql(api_key, query)["data"]["fileUpload"]["uploadFile"]
 
 
 def put_image(upload_info: dict, data: bytes, content_type: str) -> str | None:
@@ -156,12 +161,14 @@ def append_images_to_issue(
     update_issue(api_key, issue["id"], new_desc, title)
 
 
+UPDATE_ISSUE_QUERY = """mutation {{
+    issueUpdate(id: "{issue_id}", input: {{ description: {desc_json} }}) {{ success }}
+}}"""
+
+
 def update_issue(api_key: str, issue_id: str, description: str, title: str):
     desc_json = json.dumps(description)
-    mutation = f"""mutation {{
-        issueUpdate(id: "{issue_id}", input: {{ description: {desc_json} }}) {{ success }}
-    }}"""
-    result = graphql(api_key, mutation)
+    result = graphql(api_key, UPDATE_ISSUE_QUERY.format(issue_id=issue_id, desc_json=desc_json))
     success = (
         result.get("data", {}).get("issueUpdate", {}).get("success", False)
     )
@@ -170,12 +177,14 @@ def update_issue(api_key: str, issue_id: str, description: str, title: str):
     )
 
 
+TARGET_ISSUES_QUERY = """{{ issues(filter: {{
+    team: {{ name: {{ eq: "{team}" }} }}
+    project: {{ name: {{ eq: "{project}" }} }}
+}}, first: 250) {{ nodes {{ id title description }} }} }}"""
+
+
 def fetch_target_issues(api_key: str, team: str, project: str) -> list:
-    query = f"""{{ issues(filter: {{
-        team: {{ name: {{ eq: "{team}" }} }}
-        project: {{ name: {{ eq: "{project}" }} }}
-    }}, first: 250) {{ nodes {{ id title description }} }} }}"""
-    return graphql(api_key, query)["data"]["issues"]["nodes"]
+    return graphql(api_key, TARGET_ISSUES_QUERY.format(team=team, project=project))["data"]["issues"]["nodes"]
 
 
 if __name__ == "__main__":

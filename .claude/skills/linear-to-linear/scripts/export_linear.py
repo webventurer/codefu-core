@@ -8,34 +8,6 @@ from pathlib import Path
 import click
 from linear_api import graphql, require_env
 
-ISSUES_QUERY = """{{
-    issues(
-        filter: {{
-            team: {{ name: {{ eq: "{team}" }} }}
-            project: {{ name: {{ eq: "{project}" }} }}
-        }}
-        first: 250 {after}
-    ) {{
-        nodes {{
-            id identifier title description url
-            state {{ name }}
-            labels {{ nodes {{ name color }} }}
-            attachments {{ nodes {{ title subtitle url sourceType }} }}
-        }}
-        pageInfo {{ hasNextPage endCursor }}
-    }}
-}}"""
-
-COMMENTS_QUERY = """{{
-    issue(id: "{issue_id}") {{
-        comments(first: 250) {{ nodes {{ body createdAt user {{ name }} }} }}
-    }}
-}}"""
-
-STATES_QUERY = """{{ workflowStates(filter: {{ team: {{ name: {{ eq: "{team}" }} }} }}) {{
-    nodes {{ name type }}
-}} }}"""
-
 
 @click.command()
 @click.option("--api-key-env", required=True)
@@ -55,18 +27,41 @@ def main(api_key_env: str, project: str, team: str, output: str):
 
     write_json(out / "all_cards.json", issues)
     write_json(out / "states.json", states)
-    write_json(out / "labels.json", [{"name": n, "color": c} for n, c in labels.items()])
+    write_json(
+        out / "labels.json", [{"name": n, "color": c} for n, c in labels.items()]
+    )
     write_grouped(grouped, out)
     write_summary(grouped, issues, out)
 
     click.echo(f"Exported {len(issues)} issues across {len(grouped)} states to {out}")
 
 
+ISSUES_QUERY = """{{
+    issues(
+        filter: {{
+            team: {{ name: {{ eq: "{team}" }} }}
+            project: {{ name: {{ eq: "{project}" }} }}
+        }}
+        first: 250 {after}
+    ) {{
+        nodes {{
+            id identifier title description url
+            state {{ name }}
+            labels {{ nodes {{ name color }} }}
+            attachments {{ nodes {{ title subtitle url sourceType }} }}
+        }}
+        pageInfo {{ hasNextPage endCursor }}
+    }}
+}}"""
+
+
 def fetch_issues(api_key: str, team: str, project: str) -> tuple:
     issues, labels, cursor = [], {}, None
     while True:
         after = f', after: "{cursor}"' if cursor else ""
-        data = graphql(api_key, ISSUES_QUERY.format(team=team, project=project, after=after))
+        data = graphql(
+            api_key, ISSUES_QUERY.format(team=team, project=project, after=after)
+        )
         for n in data["data"]["issues"]["nodes"]:
             issues.append(issue_record(n))
             for l in n.get("labels", {}).get("nodes", []):
@@ -86,7 +81,9 @@ def issue_record(n: dict) -> dict:
         "description": n.get("description") or "",
         "state": n.get("state", {}).get("name", "Unknown"),
         "labels": [l["name"] for l in n.get("labels", {}).get("nodes", [])],
-        "attachments": [attachment_record(a) for a in n.get("attachments", {}).get("nodes", [])],
+        "attachments": [
+            attachment_record(a) for a in n.get("attachments", {}).get("nodes", [])
+        ],
         "url": n.get("url", ""),
         "comments": [],
     }
@@ -99,6 +96,13 @@ def attachment_record(a: dict) -> dict:
         "url": a["url"],
         "sourceType": a.get("sourceType", ""),
     }
+
+
+COMMENTS_QUERY = """{{
+    issue(id: "{issue_id}") {{
+        comments(first: 250) {{ nodes {{ body createdAt user {{ name }} }} }}
+    }}
+}}"""
 
 
 def fetch_comments(api_key: str, issues: list):
@@ -114,6 +118,11 @@ def fetch_comments(api_key: str, issues: list):
         ]
         if i % 10 == 9:
             time.sleep(0.5)
+
+
+STATES_QUERY = """{{ workflowStates(filter: {{ team: {{ name: {{ eq: "{team}" }} }} }}) {{
+    nodes {{ name type }}
+}} }}"""
 
 
 def fetch_states(api_key: str, team: str) -> list:
@@ -152,7 +161,9 @@ def write_summary(grouped: dict, issues: list, out: Path):
     ]
     for name in sorted(grouped):
         g = grouped[name]
-        lines.append(f"| {name} | {len(g)} | {count(g, 'description')} | {count(g, 'comments')} |")
+        lines.append(
+            f"| {name} | {len(g)} | {count(g, 'description')} | {count(g, 'comments')} |"
+        )
     (out / "SUMMARY.md").write_text("\n".join(lines) + "\n")
 
 
