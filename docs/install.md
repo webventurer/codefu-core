@@ -145,6 +145,20 @@ Get your key at [openrouter.ai/keys](https://openrouter.ai/keys).
 
 The install script merges hook config into your existing `.claude/settings.json` — it won't overwrite your other settings.
 
+## Migration skills
+
+Two skills for migrating issues between workspaces live on the [`migrate` branch](/reference/migration-skills). They require Python and are kept separate to keep the main install lightweight.
+
+```bash
+git checkout migrate
+python -m venv .venv && source .venv/bin/activate
+make install
+```
+
+This gives you `/linear-to-linear` (copy between Linear workspaces) and `/trello-to-linear` (migrate from Trello). See the [migration skills reference](/reference/migration-skills) for full details.
+
+Switch back when done: `git checkout main`
+
 ## Known limitations
 
 ### No versioning

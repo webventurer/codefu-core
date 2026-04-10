@@ -61,6 +61,23 @@ This copies skills, commands, hooks, and docs into your project. It merges hook 
 /linear:finish PG-123
 ```
 
+## Migration skills
+
+Two additional skills for migrating issues between workspaces live on the `migrate` branch. They're kept separate to keep the main install lightweight — you only need them when moving cards.
+
+```bash
+git checkout migrate
+python -m venv .venv && source .venv/bin/activate
+make install
+```
+
+| Skill | What it does |
+|:------|:-------------|
+| `/linear-to-linear` | Copy issues between Linear workspaces — descriptions, comments, labels, attachments, images, and state |
+| `/trello-to-linear` | Migrate Trello cards to Linear issues — descriptions, comments, and checklists |
+
+Both skills walk you through source/target selection interactively. Each phase has its own script with dry-run support. Switch back to main when you're done: `git checkout main`.
+
 ## Why this exists
 
 Vibe coding is great on day one. By day ten you can't tell which change broke things. By day thirty you're afraid to touch anything. By day ninety you're rewriting from scratch.
