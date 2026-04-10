@@ -51,13 +51,13 @@ Ask: *"Does this look correct? Getting source/target backwards will overwrite th
 
 ## Working directory
 
-<mark>**All commands assume you are in the skill directory.** Run this first:
+<mark>**All commands assume you are in the skill directory. `cd` there immediately after collecting inputs — before running any script.**
 
 ```bash
 cd .claude/skills/linear-to-linear
 ```
 
-Script paths (`scripts/...`) are relative to this directory. Running from the repo root will fail.</mark>
+Script paths (`scripts/...`) are relative to this directory. Running from the repo root will fail. **Do not skip this step.**</mark>
 
 ---
 
