@@ -130,10 +130,13 @@ COMMENTS_QUERY = """{{
 def fetch_comments(api_key: str, issues: list):
     for i, issue in enumerate(issues):
         data = graphql(api_key, COMMENTS_QUERY.format(issue_id=issue["id"]))
-        issue["comments"] = [
-            comment_record(c)
-            for c in data["data"]["issue"]["comments"]["nodes"]
-        ]
+        issue["comments"] = sorted(
+            [
+                comment_record(c)
+                for c in data["data"]["issue"]["comments"]["nodes"]
+            ],
+            key=lambda c: c["date"],
+        )
         if i % 10 == 9:
             time.sleep(0.5)
 
