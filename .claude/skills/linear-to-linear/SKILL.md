@@ -1,13 +1,13 @@
 ---
 name: linear-to-linear
-description: Copy issues between Linear workspaces — descriptions, comments, labels, attachments, images, and state. Use when Linear lacks a workspace copy tool. Triggers on "linear to linear", "copy workspace", "migrate linear".
+description: Copy issues between Linear workspaces — descriptions, comments, labels, attachments, images, state, project updates, and resource links. Use when Linear lacks a workspace copy tool. Triggers on "linear to linear", "copy workspace", "migrate linear".
 ---
 
 **CRITICAL**: Read and follow EVERY step in `WORKFLOW.md`
 
 # Linear to linear
 
-> Copy issues from one Linear workspace to another, preserving descriptions, comments, labels, attachments (PRs, commits), images, and state.
+> Copy issues from one Linear workspace to another, preserving descriptions, comments, labels, attachments (PRs, commits), images, state, project updates, and resource links.
 
 ---
 
@@ -79,6 +79,8 @@ python scripts/verify.py --source-dir scripts/output/phase1 --target-file script
 
 - **Image positions may shift.** Images are appended to the end rather than preserved in their original position within the description.
 - **Comment images require manual transfer.** The Linear API signs description image URLs but not comment image URLs. Images embedded in comments must be saved from the source in a browser and re-uploaded manually.
+- **Project update timestamps are not preserved.** The `projectUpdateCreate` mutation does not accept a `createdAt` field — updates are created with the current timestamp.
+- **Project update authorship is not preserved.** Updates are created as the API key owner. The original author is stored in the exported JSON.
 
 ---
 

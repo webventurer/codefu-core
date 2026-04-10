@@ -1,4 +1,4 @@
-"""Export issues with descriptions, comments, and labels from a Linear workspace."""
+"""Export issues, project updates, and resource links from a Linear workspace."""
 
 import json
 import re
@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 
 import click
-from linear_api import graphql, require_env
+from linear_api import graphql, require_env, resolve_by_name
 
 
 @click.command()
@@ -19,17 +19,23 @@ def main(api_key_env: str, project: str, team: str, output: str):
     out = Path(output)
     out.mkdir(parents=True, exist_ok=True)
 
+    project_id = resolve_project_id(api_key, project)
     issues, labels = fetch_issues(api_key, team, project)
     fetch_comments(api_key, issues)
     states = fetch_states(api_key, team)
+    meta = fetch_project_meta(api_key, project_id)
+    updates = extract_updates(meta)
+    links = extract_links(meta)
 
     grouped = group_by_state(issues)
 
     write_json(out / "all_cards.json", issues)
     write_json(out / "states.json", states)
+    write_json(out / "project_updates.json", updates)
+    write_json(out / "project_links.json", links)
     write_labels(out, labels)
     write_grouped(grouped, out)
-    write_summary(grouped, issues, out)
+    write_summary(grouped, issues, updates, links, out)
 
     click.echo(
         f"Exported {len(issues)} issues across {len(grouped)} states to {out}"
@@ -159,6 +165,49 @@ def fetch_states(api_key: str, team: str) -> list:
     return data["data"]["workflowStates"]["nodes"]
 
 
+def resolve_project_id(api_key: str, project: str) -> str:
+    return resolve_by_name(api_key, "projects", project)
+
+
+PROJECT_META_QUERY = """{{
+    project(id: "{project_id}") {{
+        projectUpdates(first: 50) {{
+            nodes {{ id body health createdAt user {{ name }} }}
+        }}
+        externalLinks {{
+            nodes {{ id label url }}
+        }}
+    }}
+}}"""
+
+
+def fetch_project_meta(api_key: str, project_id: str) -> dict:
+    data = graphql(api_key, PROJECT_META_QUERY.format(project_id=project_id))
+    return data["data"]["project"]
+
+
+def extract_updates(meta: dict) -> list:
+    updates = meta["projectUpdates"]["nodes"]
+    return sorted([update_record(u) for u in updates], key=lambda u: u["createdAt"])
+
+
+def update_record(n: dict) -> dict:
+    return {
+        "body": n.get("body", ""),
+        "health": n.get("health", "onTrack"),
+        "createdAt": n.get("createdAt", ""),
+        "author": n.get("user", {}).get("name", "Unknown"),
+    }
+
+
+def extract_links(meta: dict) -> list:
+    return [link_record(ln) for ln in meta["externalLinks"]["nodes"]]
+
+
+def link_record(n: dict) -> dict:
+    return {"label": n["label"], "url": n["url"]}
+
+
 def write_labels(out: Path, labels: dict):
     write_json(
         out / "labels.json",
@@ -183,7 +232,7 @@ def write_grouped(grouped: dict, out: Path):
         write_json(out / f"{i:02d}-{slug}.json", group)
 
 
-def write_summary(grouped: dict, issues: list, out: Path):
+def write_summary(grouped: dict, issues: list, updates: list, links: list, out: Path):
     def count(items, field):
         return sum(1 for i in items if i[field])
 
@@ -191,7 +240,9 @@ def write_summary(grouped: dict, issues: list, out: Path):
         "# Linear export summary\n",
         f"**Total issues**: {len(issues)}",
         f"**With descriptions**: {count(issues, 'description')}",
-        f"**With comments**: {count(issues, 'comments')}\n",
+        f"**With comments**: {count(issues, 'comments')}",
+        f"**Project updates**: {len(updates)}",
+        f"**Resource links**: {len(links)}\n",
         "| State | Issues | With desc | With comments |",
         "|:------|-------:|----------:|--------------:|",
     ]

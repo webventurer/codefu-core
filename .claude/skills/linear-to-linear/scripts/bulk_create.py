@@ -1,4 +1,4 @@
-"""Create issues in a target Linear workspace from cards/ payload files."""
+"""Create issues, project updates, and resource links in a target Linear workspace."""
 
 import json
 import time
@@ -13,9 +13,10 @@ from linear_api import graphql, require_env, resolve_by_name, resolve_states
 @click.option("--api-key-env", required=True)
 @click.option("--team", required=True, help="Target Linear team name")
 @click.option("--project", required=True, help="Target Linear project name")
+@click.option("--export-dir", default=None, type=click.Path(exists=True))
 @click.option("--dry-run", is_flag=True, default=False)
 def main(
-    cards_dir: str, api_key_env: str, team: str, project: str, dry_run: bool
+    cards_dir: str, api_key_env: str, team: str, project: str, export_dir: str, dry_run: bool
 ):
     api_key = require_env(api_key_env)
     team_id = resolve_by_name(api_key, "teams", team)
@@ -23,15 +24,18 @@ def main(
     state_ids = resolve_state_ids(api_key, team_id)
     label_ids = resolve_label_ids(api_key)
     payloads = load_create_payloads(Path(cards_dir))
+    meta_dir = Path(export_dir) if export_dir else Path(cards_dir).parent
 
     validate_states(payloads, state_ids)
 
     if dry_run:
         preview_payloads(payloads)
+        preview_project_meta(meta_dir)
     else:
         process_payloads(
             api_key, team_id, project_id, state_ids, label_ids, payloads
         )
+        create_project_meta(api_key, project_id, meta_dir)
 
 
 def resolve_state_ids(api_key: str, team_id: str) -> dict:
@@ -203,6 +207,66 @@ def create_attachments(api_key: str, issue_id: str, attachments: list):
         )
         icon = "✓" if success else "✗"
         click.echo(f"    {icon} attachment: {a['title'][:50]}")
+
+
+def load_json_file(path: Path) -> list:
+    return json.loads(path.read_text()) if path.exists() else []
+
+
+def preview_project_meta(meta_dir: Path):
+    for u in load_json_file(meta_dir / "project_updates.json"):
+        click.echo(f"[DRY RUN] Update: {u['health']} — {u['body'][:60]}")
+    for ln in load_json_file(meta_dir / "project_links.json"):
+        click.echo(f"[DRY RUN] Link: {ln['label']} → {ln['url']}")
+
+
+def create_project_meta(api_key: str, project_id: str, meta_dir: Path):
+    for u in load_json_file(meta_dir / "project_updates.json"):
+        create_project_update(api_key, project_id, u)
+    for ln in load_json_file(meta_dir / "project_links.json"):
+        create_project_link(api_key, project_id, ln)
+
+
+CREATE_UPDATE_QUERY = """mutation($input: ProjectUpdateCreateInput!) {
+    projectUpdateCreate(input: $input) {
+        success
+        projectUpdate { id health }
+    }
+}"""
+
+
+def create_project_update(api_key: str, project_id: str, update: dict) -> bool:
+    input_data = {
+        "projectId": project_id,
+        "health": update["health"],
+        "body": update["body"],
+    }
+    data = graphql(api_key, CREATE_UPDATE_QUERY, variables={"input": input_data})
+    success = data.get("data", {}).get("projectUpdateCreate", {}).get("success")
+    icon = "✓" if success else "✗"
+    click.echo(f"  {icon} update: {update['health']} — {update['body'][:50]}")
+    return bool(success)
+
+
+CREATE_LINK_QUERY = """mutation($input: EntityExternalLinkCreateInput!) {
+    entityExternalLinkCreate(input: $input) {
+        success
+        externalLink { id }
+    }
+}"""
+
+
+def create_project_link(api_key: str, project_id: str, link: dict) -> bool:
+    input_data = {
+        "projectId": project_id,
+        "url": link["url"],
+        "label": link["label"],
+    }
+    data = graphql(api_key, CREATE_LINK_QUERY, variables={"input": input_data})
+    success = data.get("data", {}).get("entityExternalLinkCreate", {}).get("success")
+    icon = "✓" if success else "✗"
+    click.echo(f"  {icon} link: {link['label']} → {link['url']}")
+    return bool(success)
 
 
 if __name__ == "__main__":
