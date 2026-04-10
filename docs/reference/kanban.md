@@ -8,40 +8,42 @@ See [Issue statuses](/reference/issue-statuses) for how to configure these colum
 
 ## The columns
 
-| Column | Purpose | Entry rule | Exit rule |
-|:-------|:--------|:-----------|:----------|
-| **Backlog** | Ideas and requests not yet prioritised | Anyone can add work here | Prioritised and refined enough to start |
-| **To do** | Committed work, ready to pick up | Prioritised by the team | Someone pulls it into Doing |
-| **Doing** | Actively being worked on | Developer pulls from To do | Implementation complete, ready for review |
-| **In review** | Waiting for code review or QA | PR opened or review requested | Reviewer approves or requests changes |
-| **Waiting** | Blocked on something external | Work cannot progress without input | Blocker resolved, moves back to Doing or forward |
-| **Done** | Merged and deployed | Review approved, PR merged | — |
-| **Backburner** | Parked work — valid but not now | Team agrees to defer | Re-prioritised back to Backlog or To do |
+| Category | Column | Purpose | Entry rule | Exit rule |
+|:---------|:-------|:--------|:-----------|:----------|
+| Backlog | **Backburner** | Parked work — valid but not now | Team agrees to defer | Re-prioritised back to Backlog or To do |
+| Backlog | **Backlog** | Ideas and requests not yet prioritised | Anyone can add work here | Prioritised and refined enough to start |
+| Unstarted | **To do** | Committed work, ready to pick up | Prioritised by the team | Someone pulls it into Doing |
+| Started | **Doing** | Actively being worked on | Developer pulls from To do | Implementation complete, ready for review |
+| Started | **In Review** | Waiting for code review or QA | PR opened or review requested | Reviewer approves or requests changes |
+| Started | **Waiting** | Blocked on something external | Work cannot progress without input | Blocker resolved, moves back to Doing or forward |
+| Completed | **Done** | Merged and deployed | Review approved, PR merged | — |
+| Canceled | **Canceled** | Work we decided not to do | Team agrees to cancel | — |
+| Canceled | **Duplicate** | Covered by another issue | Duplicate identified | — |
 
 ## How work flows
 
-| | | | | | | |
-|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| **Backlog** | **To do** | **Doing** | **In review** | **Waiting** | **Done** | **Backburner** |
-| Work we want to achieve | Prioritised, ready to pick up | Actively being worked on | Waiting for review | Blocked externally | Merged and deployed | Valid, but not now |
+| | | | | | | | | |
+|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| **Backburner** | **Backlog** | **To do** | **Doing** | **In Review** | **Waiting** | **Done** | **Canceled** | **Duplicate** |
+| Valid, but not now | Work we want to achieve | Prioritised, ready to pick up | Actively being worked on | Waiting for review | Blocked externally | Merged and deployed | Decided not to do | Covered elsewhere |
 
 ### The rules
 
 1. **Pull, don't push** — developers pull the next item from To do when they have capacity. Nobody assigns work to a full queue.
-2. **Limit work in progress** — cap how many items can be in Doing and In review at once. This prevents context switching and makes bottlenecks visible.
+2. **Limit work in progress** — cap how many items can be in Doing and In Review at once. This prevents context switching and makes bottlenecks visible.
 3. **Make blockers explicit** — when work stalls, move it to Waiting with a note explaining *what* it's waiting on. Don't leave it in Doing looking like active work.
 4. **Backburner is not a graveyard** — items here are intentionally deferred, not forgotten. Review the backburner periodically and either promote items back or remove them.
 
 ## Key principles
 
 - **Visualise the work** — if it's not on the board, it doesn't exist. All work should be visible.
-- **Limit WIP** — the most counterintuitive and most important rule. Finishing work is more valuable than starting work.
+- **Limit Work In Progress ("WIP")** — the most counterintuitive and most important rule. Finishing work is more valuable than starting work.
 - **Manage flow** — optimise for smooth, continuous movement across columns. A card stuck in one column for days is a signal.
 - **Make policies explicit** — entry and exit rules for each column prevent ambiguity about when work should move.
 
 ## WIP — work in progress
 
-WIP (work in progress) is the number of items actively being worked on at any given time. In Kanban, you set a **WIP limit** — a maximum number of cards allowed in a column (typically Doing and In review).
+WIP (work in progress) is the number of items actively being worked on at any given time. In Kanban, you set a **WIP limit** — a maximum number of cards allowed in a column (typically Doing and In Review).
 
 **Why limit WIP?**
 
