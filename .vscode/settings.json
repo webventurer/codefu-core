@@ -1,6 +1,0 @@
-{
-  "python.analysis.extraPaths": [],
-  "python.analysis.diagnosticSeverityOverrides": {
-    "reportMissingImports": "none"
-  }
-}
