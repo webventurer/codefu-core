@@ -87,12 +87,15 @@ def build_expected(card: dict) -> str:
     if desc := card.get("description", ""):
         parts.append(desc)
     if card.get("comments"):
-        comments = "\n\n".join(
-            f"**{c['author']}** ({c['date'][:10]}):\n{c['text']}"
-            for c in card["comments"]
-        )
-        parts.append("## Comments\n\n" + comments)
+        parts.append(format_comments_section(card["comments"]))
     return "\n\n".join(parts)
+
+
+def format_comments_section(comments: list) -> str:
+    body = "\n\n".join(
+        f"**{c['author']}** ({c['date'][:10]}):\n{c['text']}" for c in comments
+    )
+    return "## Comments\n\n" + body
 
 
 def check_content(expected: str, actual: str) -> list:

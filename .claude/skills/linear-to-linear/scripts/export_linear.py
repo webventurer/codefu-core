@@ -27,9 +27,7 @@ def main(api_key_env: str, project: str, team: str, output: str):
 
     write_json(out / "all_cards.json", issues)
     write_json(out / "states.json", states)
-    write_json(
-        out / "labels.json", [{"name": n, "color": c} for n, c in labels.items()]
-    )
+    write_labels(out, labels)
     write_grouped(grouped, out)
     write_summary(grouped, issues, out)
 
@@ -56,21 +54,31 @@ ISSUES_QUERY = """{{
 
 
 def fetch_issues(api_key: str, team: str, project: str) -> tuple:
-    issues, labels, cursor = [], {}, None
+    issues, labels = [], {}
+    for page in paginate_issues(api_key, team, project):
+        for n in page:
+            issues.append(issue_record(n))
+            collect_labels(n, labels)
+    return issues, labels
+
+
+def paginate_issues(api_key: str, team: str, project: str):
+    cursor = None
     while True:
         after = f', after: "{cursor}"' if cursor else ""
         data = graphql(
             api_key, ISSUES_QUERY.format(team=team, project=project, after=after)
         )
-        for n in data["data"]["issues"]["nodes"]:
-            issues.append(issue_record(n))
-            for l in n.get("labels", {}).get("nodes", []):
-                labels[l["name"]] = l.get("color", "")
+        yield data["data"]["issues"]["nodes"]
         page = data["data"]["issues"]["pageInfo"]
-        cursor = page["endCursor"] if page["hasNextPage"] else None
-        if not cursor:
+        if not page["hasNextPage"]:
             break
-    return issues, labels
+        cursor = page["endCursor"]
+
+
+def collect_labels(node: dict, labels: dict):
+    for l in node.get("labels", {}).get("nodes", []):
+        labels[l["name"]] = l.get("color", "")
 
 
 def issue_record(n: dict) -> dict:
@@ -80,13 +88,19 @@ def issue_record(n: dict) -> dict:
         "title": n["title"],
         "description": n.get("description") or "",
         "state": n.get("state", {}).get("name", "Unknown"),
-        "labels": [l["name"] for l in n.get("labels", {}).get("nodes", [])],
-        "attachments": [
-            attachment_record(a) for a in n.get("attachments", {}).get("nodes", [])
-        ],
+        "labels": label_names(n),
+        "attachments": attachment_records(n),
         "url": n.get("url", ""),
         "comments": [],
     }
+
+
+def label_names(n: dict) -> list:
+    return [l["name"] for l in n.get("labels", {}).get("nodes", [])]
+
+
+def attachment_records(n: dict) -> list:
+    return [attachment_record(a) for a in n.get("attachments", {}).get("nodes", [])]
 
 
 def attachment_record(a: dict) -> dict:
@@ -112,15 +126,18 @@ def fetch_comments(api_key: str, issues: list):
     for i, issue in enumerate(issues):
         data = graphql(api_key, COMMENTS_QUERY.format(issue_id=issue["id"]))
         issue["comments"] = [
-            {
-                "author": c.get("user", {}).get("name", "Unknown"),
-                "date": c.get("createdAt", ""),
-                "text": c.get("body", ""),
-            }
-            for c in data["data"]["issue"]["comments"]["nodes"]
+            comment_record(c) for c in data["data"]["issue"]["comments"]["nodes"]
         ]
         if i % 10 == 9:
             time.sleep(0.5)
+
+
+def comment_record(c: dict) -> dict:
+    return {
+        "author": c.get("user", {}).get("name", "Unknown"),
+        "date": c.get("createdAt", ""),
+        "text": c.get("body", ""),
+    }
 
 
 STATES_QUERY = """{{ workflowStates(filter: {{ team: {{ name: {{ eq: "{team}" }} }} }}) {{
@@ -131,6 +148,12 @@ STATES_QUERY = """{{ workflowStates(filter: {{ team: {{ name: {{ eq: "{team}" }}
 def fetch_states(api_key: str, team: str) -> list:
     data = graphql(api_key, STATES_QUERY.format(team=team))
     return data["data"]["workflowStates"]["nodes"]
+
+
+def write_labels(out: Path, labels: dict):
+    write_json(
+        out / "labels.json", [{"name": n, "color": c} for n, c in labels.items()]
+    )
 
 
 def write_json(path: Path, data):

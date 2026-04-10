@@ -124,10 +124,13 @@ def build_issue_input(
         "title": payload["title"],
         "description": payload["description"],
     }
-    resolved = [label_ids[n] for n in payload.get("labels", []) if n in label_ids]
-    if resolved:
+    if resolved := resolve_payload_labels(payload, label_ids):
         result["labelIds"] = resolved
     return result
+
+
+def resolve_payload_labels(payload: dict, label_ids: dict) -> list:
+    return [label_ids[n] for n in payload.get("labels", []) if n in label_ids]
 
 
 CREATE_ISSUE_QUERY = """mutation($input: IssueCreateInput!) {

@@ -141,24 +141,37 @@ def request_upload_url(
 
 
 def put_image(upload_info: dict, data: bytes, content_type: str) -> str | None:
+    headers = build_upload_headers(upload_info, content_type)
+    resp = requests.put(upload_info["uploadUrl"], data=data, headers=headers)
+    return upload_info["assetUrl"] if resp.status_code in (200, 201) else None
+
+
+def build_upload_headers(upload_info: dict, content_type: str) -> dict:
     headers = {"Content-Type": content_type}
     for h in upload_info["headers"]:
         headers[h["key"]] = h["value"]
-    resp = requests.put(upload_info["uploadUrl"], data=data, headers=headers)
-    return upload_info["assetUrl"] if resp.status_code in (200, 201) else None
+    return headers
 
 
 def append_images_to_issue(
     api_key: str, target_issues: list, title: str, url_map: dict
 ):
-    issue = next((i for i in target_issues if i["title"] == title), None)
+    issue = find_issue_by_title(target_issues, title)
     if not issue:
         click.echo(f"  ✗ Target not found: {title[:60]}")
         return
 
-    img_md = "\n\n".join(f"![{alt}]({url})" for alt, url in url_map.values())
+    img_md = build_image_markdown(url_map)
     new_desc = (issue.get("description", "") + "\n\n" + img_md).strip()
     update_issue(api_key, issue["id"], new_desc, title)
+
+
+def find_issue_by_title(issues: list, title: str) -> dict | None:
+    return next((i for i in issues if i["title"] == title), None)
+
+
+def build_image_markdown(url_map: dict) -> str:
+    return "\n\n".join(f"![{alt}]({url})" for alt, url in url_map.values())
 
 
 UPDATE_ISSUE_QUERY = """mutation {{

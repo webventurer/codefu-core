@@ -107,15 +107,16 @@ def write_summary(grouped: dict[str, list[dict]], out: Path):
     (out / "SUMMARY.md").write_text("\n".join(lines) + "\n")
 
 
+def count_with(cards: list[dict], field: str) -> int:
+    return sum(1 for c in cards if c[field])
+
+
 def summary_header(cards: list[dict]) -> list[str]:
-    total = len(cards)
-    with_desc = sum(1 for c in cards if c["description"])
-    with_comments = sum(1 for c in cards if c["comments"])
     return [
         "# Trello export summary\n",
-        f"**Total cards**: {total}",
-        f"**With descriptions**: {with_desc}",
-        f"**With comments**: {with_comments}\n",
+        f"**Total cards**: {len(cards)}",
+        f"**With descriptions**: {count_with(cards, 'description')}",
+        f"**With comments**: {count_with(cards, 'comments')}\n",
     ]
 
 
@@ -126,9 +127,9 @@ def summary_table(grouped: dict[str, list[dict]]) -> list[str]:
     ]
     for name in sorted(grouped):
         cards = grouped[name]
-        desc = sum(1 for c in cards if c["description"])
-        comments = sum(1 for c in cards if c["comments"])
-        lines.append(f"| {name} | {len(cards)} | {desc} | {comments} |")
+        lines.append(
+            f"| {name} | {len(cards)} | {count_with(cards, 'description')} | {count_with(cards, 'comments')} |"
+        )
     return lines
 
 
