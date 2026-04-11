@@ -34,7 +34,11 @@ def send(prompt: str, model: str, system: str = "", effort: str = "") -> dict:
     if system:
         messages.append({"role": "system", "content": system})
     messages.append({"role": "user", "content": prompt})
-    payload = {"model": model, "messages": messages, "max_tokens": DEFAULT_MAX_TOKENS}
+    payload = {
+        "model": model,
+        "messages": messages,
+        "max_tokens": DEFAULT_MAX_TOKENS,
+    }
     if effort:
         payload["reasoning"] = {"enabled": True, "effort": effort}
     resp = httpx.post(
