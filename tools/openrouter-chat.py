@@ -20,7 +20,8 @@ import httpx
 dotenv.load_dotenv(Path.home() / ".env")
 
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
-DEFAULT_MODEL = "openai/gpt-5.4-pro"
+DEFAULT_MODEL = "openai/gpt-5.4"
+DEFAULT_MAX_TOKENS = 4000
 
 
 def check_env():
@@ -33,7 +34,7 @@ def send(prompt: str, model: str, system: str = "", effort: str = "") -> dict:
     if system:
         messages.append({"role": "system", "content": system})
     messages.append({"role": "user", "content": prompt})
-    payload = {"model": model, "messages": messages}
+    payload = {"model": model, "messages": messages, "max_tokens": DEFAULT_MAX_TOKENS}
     if effort:
         payload["reasoning"] = {"enabled": True, "effort": effort}
     resp = httpx.post(
