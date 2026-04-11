@@ -53,6 +53,13 @@ def require_env(name: str) -> str:
     return val
 
 
+QUOTE_MAP = str.maketrans({"\u201c": '"', "\u201d": '"', "\u2018": "'", "\u2019": "'"})
+
+
+def normalize_quotes(text: str) -> str:
+    return (text or "").translate(QUOTE_MAP)
+
+
 def load_source_cards(source_dir: str) -> list:
     cards = []
     for f in sorted(Path(source_dir).glob("[0-9]*.json")):

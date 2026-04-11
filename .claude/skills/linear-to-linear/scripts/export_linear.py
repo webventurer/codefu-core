@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 
 import click
-from linear_api import graphql, require_env, resolve_by_name
+from linear_api import graphql, normalize_quotes, require_env, resolve_by_name
 
 
 @click.command()
@@ -96,8 +96,8 @@ def issue_record(n: dict) -> dict:
     return {
         "id": n["id"],
         "identifier": n["identifier"],
-        "title": n["title"],
-        "description": n.get("description") or "",
+        "title": normalize_quotes(n["title"]),
+        "description": normalize_quotes(n.get("description") or ""),
         "state": n.get("state", {}).get("name", "Unknown"),
         "labels": label_names(n),
         "attachments": attachment_records(n),
@@ -153,7 +153,7 @@ def comment_record(c: dict) -> dict:
     return {
         "author": c.get("user", {}).get("name", "Unknown"),
         "date": c.get("createdAt", ""),
-        "text": c.get("body", ""),
+        "text": normalize_quotes(c.get("body", "")),
     }
 
 
@@ -192,8 +192,8 @@ def fetch_project_meta(api_key: str, project_id: str) -> dict:
 def extract_project_info(meta: dict) -> dict:
     return {
         "name": meta.get("name", ""),
-        "summary": meta.get("description") or "",
-        "description": meta.get("content") or "",
+        "summary": normalize_quotes(meta.get("description") or ""),
+        "description": normalize_quotes(meta.get("content") or ""),
     }
 
 
@@ -206,7 +206,7 @@ def extract_updates(meta: dict) -> list:
 
 def update_record(n: dict) -> dict:
     return {
-        "body": n.get("body", ""),
+        "body": normalize_quotes(n.get("body", "")),
         "health": n.get("health", "onTrack"),
         "createdAt": n.get("createdAt", ""),
         "author": n.get("user", {}).get("name", "Unknown"),
@@ -218,7 +218,7 @@ def extract_links(meta: dict) -> list:
 
 
 def link_record(n: dict) -> dict:
-    return {"label": n["label"], "url": n["url"]}
+    return {"label": normalize_quotes(n["label"]), "url": n["url"]}
 
 
 def write_labels(out: Path, labels: dict):

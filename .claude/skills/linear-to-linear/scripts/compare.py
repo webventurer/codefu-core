@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 
 import click
-from linear_api import graphql, require_env
+from linear_api import graphql, normalize_quotes, require_env
 
 TOLERANCE = 100
 
@@ -76,7 +76,7 @@ def compare_one(card: dict, target_by_title: dict) -> dict | None:
         return None
 
     expected = build_expected(card)
-    actual = target.get("description") or ""
+    actual = normalize_quotes(target.get("description") or "")
     issues = check_content(expected, actual)
 
     if not issues:
@@ -201,15 +201,17 @@ def compare_project_meta(
 
 def compare_project_fields(source: dict, target: dict) -> list:
     problems = []
-    if source.get("description", "") != (target.get("content") or ""):
+    if source.get("description", "") != normalize_quotes(target.get("content") or ""):
         problems.append("project description differs from source")
-    if source.get("summary", "") != (target.get("description") or ""):
+    if source.get("summary", "") != normalize_quotes(target.get("description") or ""):
         problems.append("project summary differs from source")
     return problems
 
 
 def compare_project_updates(source: list, target: dict) -> list:
-    target_bodies = {u["body"] for u in target["projectUpdates"]["nodes"]}
+    target_bodies = {
+        normalize_quotes(u["body"]) for u in target["projectUpdates"]["nodes"]
+    }
     missing = [u["body"][:60] for u in source if u["body"] not in target_bodies]
     return [f"missing project update: {body}" for body in missing]
 
