@@ -82,7 +82,7 @@ python scripts/compare.py --target-api-key-env LINEAR_WORDTRACKER_API_KEY --targ
 
 ## Known limitations
 
-- **Image positions may shift.** Images are appended to the end rather than preserved in their original position within the description.
+- **Image positions are preserved.** `bulk_create.py` strips images from descriptions before creating issues (preventing Linear from auto-generating broken placeholders), then `migrate_images.py` re-uploads and replaces them inline at their original positions.
 - **Comment images require manual transfer.** The Linear API signs description image URLs but not comment image URLs. Images embedded in comments must be saved from the source in a browser and re-uploaded manually.
 - **Project update timestamps are not preserved.** The `projectUpdateCreate` mutation does not accept a `createdAt` field — updates are created with the current timestamp.
 - **Project update authorship is not preserved.** Updates are created as the API key owner. The original author is stored in the exported JSON.

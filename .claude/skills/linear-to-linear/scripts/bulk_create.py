@@ -1,6 +1,7 @@
 """Create issues, project updates, and resource links in a target Linear workspace."""
 
 import json
+import re
 import time
 from pathlib import Path
 
@@ -148,7 +149,7 @@ def process_one_issue(
             project_id=project_id,
             state_id=state_id,
             title=title,
-            description=payload["description"],
+            description=strip_images(payload["description"]),
             label_ids=resolved_labels or None,
         )
     except LinearError as e:
@@ -161,6 +162,13 @@ def process_one_issue(
 
 def resolve_payload_labels(payload: dict, label_ids: dict) -> list:
     return [label_ids[n] for n in payload.get("labels", []) if n in label_ids]
+
+
+def strip_images(description: str) -> str:
+    cleaned = re.sub(
+        r"!\[[^\]]*\]\(https://uploads\.linear\.app/[^)]+\)\n?", "", description
+    )
+    return re.sub(r"\n{3,}", "\n\n", cleaned).strip()
 
 
 def process_attachments(api_key: str, issue_id: str, attachments: list):
