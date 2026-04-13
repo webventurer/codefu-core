@@ -15,7 +15,8 @@
 | 5 | **Match** to Linear issues | Phase 2 below |
 | 6 | **Review** the match report | Human review |
 | 7 | **Upsert** Linear | Phase 3 below |
-| 8 | **Verify** migration | Phase 4 below |
+| 8 | **Migrate images** | Phase 4 below |
+| 9 | **Verify** migration | Phase 5 below |
 
 ---
 
@@ -99,19 +100,75 @@ In **apply** mode, the script calls Linear directly via `tools/linear_client.py`
 
 ---
 
-## Phase 4: Verify
+## Phase 4: Migrate images
 
-**Goal**: Confirm every Trello card landed in Linear with correct title, description, state, and order.
+**Goal**: Download Trello image attachments and re-upload inline to Linear issue descriptions.
 
-1. Export Linear issues to a JSON file via `mcp__linear-*__list_issues` (paginate if > 250)
-2. Run `verify.py` comparing Trello export against Linear issues
-3. Review the output — all checks should pass
+Trello attachment URLs require OAuth authentication. The script downloads each image from Trello, uploads it to Linear via the `fileUpload` mutation, and embeds it inline in the issue description.
+
+Two scripts handle different image sources:
+
+1. **Description images** — images already referenced in the description (broken `uploads.linear.app` URLs from the initial migration):
 
 ```bash
-python scripts/verify.py --trello-dir /tmp/trello-export --linear-file /tmp/linear-issues.json
+# Dry-run
+python /tmp/migrate_trello_images.py \
+  --project "<PROJECT>" \
+  --trello-data /tmp/trello-export/all_cards.json \
+  --dry-run
+
+# Apply
+python /tmp/migrate_trello_images.py \
+  --project "<PROJECT>" \
+  --trello-data /tmp/trello-export/all_cards.json
 ```
 
-**Checks**: counts match, all titles present, correct order, descriptions contain Trello content.
+2. **Card attachments** — standalone image attachments on Trello cards that need embedding inline:
+
+```bash
+# Dry-run
+python /tmp/migrate_trello_attachments.py \
+  --project "<PROJECT>" \
+  --dry-run
+
+# Apply
+python /tmp/migrate_trello_attachments.py \
+  --project "<PROJECT>"
+```
+
+---
+
+## Phase 5: Verify
+
+**Goal**: Confirm every Trello card landed in Linear with correct title, description, comments, and images.
+
+The verify script fetches every Linear issue individually (to get full descriptions, not truncated), then compares against the Trello export across four dimensions.
+
+```bash
+cd .claude/skills/trello-to-linear
+
+python scripts/verify.py \
+  --target-api-key-env <TARGET_API_KEY_ENV> \
+  --target-project "<PROJECT>" \
+  --export-dir /tmp/trello-export
+```
+
+**Checks**:
+
+- **Titles** — every Trello card has a matching Linear issue
+- **Descriptions** — Trello description text appears in Linear
+- **Comments** — verbatim comment count matches (author + date format)
+- **Images** — Trello image attachments appear inline in Linear
+
+To auto-fix truncated descriptions and missing comments:
+
+```bash
+python scripts/verify.py \
+  --target-api-key-env <TARGET_API_KEY_ENV> \
+  --target-project "<PROJECT>" \
+  --export-dir /tmp/trello-export \
+  --fix
+```
 
 ---
 
@@ -119,6 +176,8 @@ python scripts/verify.py --trello-dir /tmp/trello-export --linear-file /tmp/line
 
 - All `update` items in the match report have been pushed to Linear
 - All `create` items have been created in Linear
+- Images migrated and rendering in Linear
+- `verify.py` passes on all four dimensions
 - Summary written to `UPDATE-SUMMARY.md`
 
 ---
@@ -129,5 +188,8 @@ python scripts/verify.py --trello-dir /tmp/trello-export --linear-file /tmp/line
 - [ ] Linear project verified as existing and not trashed
 - [ ] Match report reviewed — fuzzy matches verified, creates confirmed
 - [ ] Dry-run output reviewed before applying
-- [ ] `verify.py` passes — counts, titles, order, and descriptions all correct
+- [ ] `update_linear.py` run — all issues created/updated
+- [ ] Image migration run — description images and card attachments uploaded
+- [ ] `verify.py` passes — titles, descriptions, comments, and images all correct
+- [ ] Spot-checked image rendering in target issues
 - [ ] `UPDATE-SUMMARY.md` written with final counts
