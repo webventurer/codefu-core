@@ -212,9 +212,11 @@ def description_body(desc: str) -> str:
 
 
 def check_description(card: dict, desc: str, identifier: str) -> str | None:
-    if not card.get("description", "").strip():
+    source = card.get("description", "").strip()
+    if not source:
         return None
-    if len(description_body(desc)) < 20:
+    body = description_body(desc)
+    if not body:
         return f"{identifier}: {card['name'][:50]} — description missing"
     return None
 
