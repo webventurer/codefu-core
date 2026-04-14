@@ -11,7 +11,7 @@
 
 COMMAND=$(jq -r '.tool_input.command // ""')
 
-echo "$COMMAND" | grep -qE '^\s*git\s+commit\b' || exit 0
+echo "$COMMAND" | grep -qE '\bgit\s+commit\b' || exit 0
 
 cat <<EOF
 BLOCKED: bare "git commit" is not allowed.
