@@ -11,6 +11,7 @@ import {
 } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { removeSection } from "./gitignore.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const srcRoot = join(__dirname, "..");
@@ -101,11 +102,23 @@ function removeHookConfig() {
   writeFileSync(settingsPath, `${JSON.stringify(settings, null, 2)}\n`);
 }
 
+function removeGitignoreSection() {
+  const path = join(destRoot, ".gitignore");
+  if (!existsSync(path)) return;
+  const stripped = removeSection(readFileSync(path, "utf8"));
+  if (!stripped.trim()) {
+    unlinkSync(path);
+    return;
+  }
+  writeFileSync(path, stripped.endsWith("\n") ? stripped : `${stripped}\n`);
+}
+
 function main() {
   console.log("\nstride — uninstalling\n");
 
   DIRS.forEach(removeStrideFiles);
   removeHookConfig();
+  removeGitignoreSection();
 
   console.log("Removed stride files from .claude/:");
   console.log("  skills/commit/   (4-pass atomic commit skill)");

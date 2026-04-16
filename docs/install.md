@@ -147,6 +147,8 @@ Get your key at [openrouter.ai/keys](https://openrouter.ai/keys).
 
 The installer only writes under `.claude/` — it never touches other directories in your repo. Hook config goes into `.claude/settings.local.json` (gitignored) — your committed `settings.json` is never modified. Claude Code concatenates hooks from both files, so repo hooks and stride hooks run together.
 
+The installer also offers to add stride's paths to your root `.gitignore` in a marker-delimited section (`# >>> stride ... # <<< stride`). Accept the prompt to keep `git status` clean; decline to commit stride's content into your repo instead. Uninstall removes the section cleanly.
+
 ## Migration skills
 
 Two skills for migrating issues between workspaces live on the [`migrate` branch](/reference/migration-skills). They require Python and are kept separate to keep the main install lightweight.

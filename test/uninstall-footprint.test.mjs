@@ -17,12 +17,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const strideRoot = join(__dirname, "..");
 const fixtureRoot = join("/tmp", `stride-uninstall-${process.pid}`);
 
-function seedInstalled() {
+function seedInstalled({ gitignore = "n" } = {}) {
   rmSync(fixtureRoot, { recursive: true, force: true });
   mkdirSync(fixtureRoot, { recursive: true });
   execSync(`node ${join(strideRoot, "bin/install.mjs")}`, {
     cwd: fixtureRoot,
-    input: "none\nn\n",
+    input: `${gitignore}\nnone\nn\n`,
     stdio: ["pipe", "pipe", "pipe"],
   });
 }
@@ -158,5 +158,34 @@ describe("uninstall footprint", () => {
       existsSync(join(fixtureRoot, ".claude/skills/my-custom-skill/SKILL.md")),
       true,
     );
+  });
+
+  it("removes the stride section from .gitignore on uninstall", () => {
+    seedInstalled({ gitignore: "y" });
+    writeSentinel(".gitignore_extra", "unused"); // ensure seed doesn't collide
+
+    runUninstall();
+
+    const gitignore = join(fixtureRoot, ".gitignore");
+    strictEqual(
+      existsSync(gitignore) &&
+        readFileSync(gitignore, "utf8").includes("# >>> stride"),
+      false,
+      "stride section should be gone from .gitignore",
+    );
+  });
+
+  it("deletes .gitignore if it only contained the stride section", () => {
+    rmSync(fixtureRoot, { recursive: true, force: true });
+    mkdirSync(fixtureRoot, { recursive: true });
+    execSync(`node ${join(strideRoot, "bin/install.mjs")}`, {
+      cwd: fixtureRoot,
+      input: "y\nnone\nn\n",
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+
+    runUninstall();
+
+    strictEqual(existsSync(join(fixtureRoot, ".gitignore")), false);
   });
 });
