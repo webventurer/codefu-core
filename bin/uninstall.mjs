@@ -15,9 +15,9 @@ const DIRS = [
   ".claude/skills/craft",
   ".claude/commands/linear",
   ".claude/hooks",
-  ".claude/docs/patterns/git",
-  ".claude/docs/concepts",
-  ".claude/docs/principles",
+  ".claude/stride/docs/patterns/git",
+  ".claude/stride/docs/concepts",
+  ".claude/stride/docs/principles",
   "tools",
 ];
 
@@ -71,7 +71,7 @@ function main() {
   console.log("  .claude/skills/craft/      (CRAFT prompt skill)");
   console.log("  .claude/commands/linear/   (Linear workflow commands)");
   console.log("  .claude/hooks/             (commit hook scripts)");
-  console.log("  .claude/docs/              (principles, patterns, concepts)");
+  console.log("  .claude/stride/docs/       (principles, patterns, concepts)");
   console.log("  tools/                     (cross-model feedback script)");
   console.log("  .mcp.json.example          (Linear MCP server reference)");
   console.log(
