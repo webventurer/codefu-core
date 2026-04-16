@@ -246,9 +246,9 @@ function logCopiedFiles() {
 
 async function confirmSettingsMerge() {
   const answer = await ask(
-    "\nMerge hook config into existing .claude/settings.local.json? (y/n) ",
+    "\nMerge hook config into existing .claude/settings.local.json? [Y/n] ",
   );
-  return answer === "y" || answer === "yes";
+  return !answer || answer === "y" || answer === "yes";
 }
 
 async function installHookConfig() {
