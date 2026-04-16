@@ -19,18 +19,31 @@ const srcRoot = join(__dirname, "..");
 const destRoot = process.cwd();
 
 const HOOK_CONFIG = {
-  PreToolUse: [
-    {
-      matcher: "Bash",
-      hooks: [
-        {
-          type: "command",
-          command:
-            "$CLAUDE_PROJECT_DIR/.claude/hooks/pretooluse/block_bare_git_commit.sh",
-        },
-      ],
-    },
-  ],
+  hooks: {
+    UserPromptSubmit: [
+      {
+        hooks: [
+          {
+            type: "command",
+            command:
+              "$CLAUDE_PROJECT_DIR/.claude/hooks/userpromptsubmit/inject_design_principles.sh",
+          },
+        ],
+      },
+    ],
+    PreToolUse: [
+      {
+        matcher: "Bash",
+        hooks: [
+          {
+            type: "command",
+            command:
+              "$CLAUDE_PROJECT_DIR/.claude/hooks/pretooluse/block_bare_git_commit.sh",
+          },
+        ],
+      },
+    ],
+  },
 };
 
 function ask(question) {
@@ -78,12 +91,14 @@ const DIRS = [
   ".claude/hooks",
   ".claude/docs/patterns/git",
   ".claude/docs/concepts",
+  ".claude/docs/principles",
   "tools",
 ];
 
 const HOOKS = [
   ".claude/hooks/do_commit.sh",
   ".claude/hooks/pretooluse/block_bare_git_commit.sh",
+  ".claude/hooks/userpromptsubmit/inject_design_principles.sh",
 ];
 
 function resolveTypeMismatch(dest) {
@@ -208,7 +223,7 @@ async function main() {
   console.log("  .claude/skills/commit/     (4-pass atomic commit skill)");
   console.log("  .claude/commands/linear/   (Linear workflow commands)");
   console.log("  .claude/hooks/             (commit hook scripts)");
-  console.log("  .claude/docs/              (supporting documentation)");
+  console.log("  .claude/docs/              (principles, patterns, concepts)");
   console.log("  tools/                     (cross-model feedback script)");
   console.log("  .mcp.json.example          (Linear MCP server reference)");
 

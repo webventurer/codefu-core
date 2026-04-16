@@ -17,12 +17,16 @@ const DIRS = [
   ".claude/hooks",
   ".claude/docs/patterns/git",
   ".claude/docs/concepts",
+  ".claude/docs/principles",
   "tools",
 ];
 
 const EXAMPLE_FILES = [".mcp.json.example"];
 
-const HOOK_MATCHER = "block_bare_git_commit.sh";
+const HOOK_MATCHERS = [
+  "block_bare_git_commit.sh",
+  "inject_design_principles.sh",
+];
 
 function removeDir(dir) {
   const full = join(destRoot, dir);
@@ -34,18 +38,23 @@ function removeFile(file) {
   if (existsSync(full)) rmSync(full);
 }
 
+function isStrideHook(entry) {
+  return HOOK_MATCHERS.some((m) => JSON.stringify(entry).includes(m));
+}
+
 function removeHookConfig() {
   const settingsPath = join(destRoot, ".claude/settings.json");
   if (!existsSync(settingsPath)) return;
 
   const settings = JSON.parse(readFileSync(settingsPath, "utf8"));
-  const hooks = settings.PreToolUse;
-  if (!Array.isArray(hooks)) return;
+  if (!settings.hooks) return;
 
-  settings.PreToolUse = hooks.filter(
-    (h) => !JSON.stringify(h).includes(HOOK_MATCHER),
-  );
-  if (settings.PreToolUse.length === 0) delete settings.PreToolUse;
+  for (const event of ["UserPromptSubmit", "PreToolUse", "PostToolUse"]) {
+    const hooks = settings.hooks[event];
+    if (!Array.isArray(hooks)) continue;
+    settings.hooks[event] = hooks.filter((h) => !isStrideHook(h));
+    if (settings.hooks[event].length === 0) delete settings.hooks[event];
+  }
 
   writeFileSync(settingsPath, `${JSON.stringify(settings, null, 2)}\n`);
 }
@@ -62,10 +71,10 @@ function main() {
   console.log("  .claude/skills/craft/      (CRAFT prompt skill)");
   console.log("  .claude/commands/linear/   (Linear workflow commands)");
   console.log("  .claude/hooks/             (commit hook scripts)");
-  console.log("  .claude/docs/              (supporting documentation)");
+  console.log("  .claude/docs/              (principles, patterns, concepts)");
   console.log("  tools/                     (cross-model feedback script)");
   console.log("  .mcp.json.example          (Linear MCP server reference)");
-  console.log("  PreToolUse hook            (from .claude/settings.json)");
+  console.log("  hooks config               (from .claude/settings.json)");
   console.log(
     "\nNote: .mcp.json was not modified — remove Linear servers manually if needed.",
   );
