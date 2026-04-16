@@ -12,6 +12,7 @@ import {
 import { dirname, join } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
+import { buildSection, removeSection } from "./gitignore.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const srcRoot = join(__dirname, "..");
@@ -281,9 +282,37 @@ function logAvailableSkills() {
   console.log("  /linear:next-steps   — review priorities\n");
 }
 
+function gitignoreEntries() {
+  const entries = DIRS.filter((d) => d !== ".claude/hooks").map((d) => `${d}/`);
+  return [...entries, ...HOOKS].sort();
+}
+
+async function confirmGitignoreWrite() {
+  const answer = await ask("\nAdd stride paths to .gitignore? [Y/n] ");
+  return !answer || answer === "y" || answer === "yes";
+}
+
+function writeGitignoreSection() {
+  const path = join(destRoot, ".gitignore");
+  const existing = existsSync(path) ? readFileSync(path, "utf8") : "";
+  const stripped = removeSection(existing);
+  const prefix = stripped ? `${stripped.trimEnd()}\n\n` : "";
+  writeFileSync(path, `${prefix}${buildSection(gitignoreEntries())}\n`);
+}
+
+async function configureGitignore() {
+  if (!(await confirmGitignoreWrite())) {
+    console.log("Skipped .gitignore update");
+    return;
+  }
+  writeGitignoreSection();
+  console.log("Updated .gitignore with stride paths");
+}
+
 async function main() {
   console.log("\nstride — All the speed. None of the mess.\n");
   installFiles();
+  await configureGitignore();
   await configureMcp();
   if (!(await installHookConfig())) return;
   logAvailableSkills();

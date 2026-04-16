@@ -36,8 +36,9 @@ function seedFixture() {
   }
 }
 
-function runInstall() {
-  const input = "none\nn\n";
+function runInstall({ gitignore = "n" } = {}) {
+  // Prompts in order: gitignore, MCP (none), settings merge (n).
+  const input = `${gitignore}\nnone\nn\n`;
   execSync(`node ${join(strideRoot, "bin/install.mjs")}`, {
     cwd: fixtureRoot,
     input,
@@ -94,5 +95,48 @@ describe("install footprint", () => {
     strictEqual(existsSync(join(claudeDir, "commands/linear")), true);
     strictEqual(existsSync(join(claudeDir, "hooks")), true);
     strictEqual(existsSync(join(claudeDir, "tools/openrouter-chat.py")), true);
+  });
+
+  it("writes the stride section to .gitignore when accepted", () => {
+    seedFixture();
+    runInstall({ gitignore: "y" });
+
+    const gitignore = readFileSync(join(fixtureRoot, ".gitignore"), "utf8");
+    strictEqual(
+      gitignore.includes("# >>> stride (auto-managed, do not edit) >>>"),
+      true,
+    );
+    strictEqual(gitignore.includes("# <<< stride <<<"), true);
+    strictEqual(gitignore.includes(".claude/tools/"), true);
+    strictEqual(gitignore.includes(".claude/stride/"), true);
+    strictEqual(
+      gitignore.includes(
+        ".claude/hooks/userpromptsubmit/inject_design_principles.sh",
+      ),
+      true,
+    );
+  });
+
+  it("preserves existing .gitignore entries when adding the stride section", () => {
+    seedFixture();
+    runInstall({ gitignore: "y" });
+
+    const gitignore = readFileSync(join(fixtureRoot, ".gitignore"), "utf8");
+    strictEqual(gitignore.includes("node_modules"), true);
+  });
+
+  it("replaces an existing stride section rather than duplicating", () => {
+    seedFixture();
+    const existing = `node_modules\n\n# >>> stride (auto-managed, do not edit) >>>\n.claude/old-entry/\n# <<< stride <<<\n`;
+    writeFileSync(join(fixtureRoot, ".gitignore"), existing);
+
+    runInstall({ gitignore: "y" });
+
+    const gitignore = readFileSync(join(fixtureRoot, ".gitignore"), "utf8");
+    const matches = gitignore.match(/# >>> stride/g);
+    strictEqual(matches?.length, 1, "stride section should not duplicate");
+    strictEqual(gitignore.includes(".claude/old-entry/"), false);
+    strictEqual(gitignore.includes(".claude/tools/"), true);
+    strictEqual(gitignore.includes("node_modules"), true);
   });
 });
