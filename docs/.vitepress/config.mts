@@ -35,6 +35,7 @@ export default defineConfig({
         text: 'Reference',
         items: [
           { text: 'Agentic engineering', link: '/reference/agentic-engineering' },
+          { text: "Can't we just use Lovable?", link: '/reference/cant-we-just-use-lovable' },
           { text: 'Kanban process', link: '/reference/kanban' },
           { text: 'Issue statuses', link: '/reference/issue-statuses' },
           { text: 'Issue template', link: '/reference/issue-template' },
